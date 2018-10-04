@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/client_token"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="client_token"
+        android:inputType="textShortMessage"
+        android:text="PVRl3rfnvesl5s" />
+
+    <EditText
+        android:id="@+id/booking_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="booking_id"
+        android:inputType="textShortMessage"
+        android:text="bookId23432" />
+
+    <EditText
+        android:id="@+id/selected_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="selected_date"
+        android:inputType="textShortMessage"
+        android:text="20/07/2018" />
+
+    <EditText
+        android:id="@+id/movie_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="movie_name"
+        android:inputType="textShortMessage"
+        android:text="Moviename" />
+
+    <EditText
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="location"
+        android:inputType="textShortMessage"
+        android:text="location" />
+
+    <EditText
+        android:id="@+id/theatre_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="theatre_name"
+        android:inputType="textShortMessage"
+        android:text="theatrename" />
+
+    <EditText
+        android:id="@+id/show_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="show_time"
+        android:inputType="textShortMessage"
+        android:text="15:30" />
+
+    <EditText
+        android:id="@+id/screen_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="screen_number"
+        android:inputType="textShortMessage"
+        android:text="10" />
+
+    <EditText
+        android:id="@+id/seat_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="seat_count"
+        android:inputType="textShortMessage"
+        android:text="10" />
+
+    <EditText
+        android:id="@+id/customer_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="customer_name"
+        android:inputType="textShortMessage"
+        android:text="custname" />
+
+    <EditText
+        android:id="@+id/mobile_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="mobile_number"
+        android:inputType="textShortMessage"
+        android:text="1234567890" />
+
+    <EditText
+        android:id="@+id/user_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="user_email"
+        android:inputType="textShortMessage"
+        android:text="a@b.c" />
+
+    <EditText
+        android:id="@+id/seat_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="seat_id"
+        android:inputType="textShortMessage"
+        android:text="A1" />
+
+    <EditText
+        android:id="@+id/screen_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="screen_size"
+        android:inputType="textShortMessage"
+        android:text="10" />
+
+    <EditText
+        android:id="@+id/callback_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="callback_url"
+        android:inputType="textShortMessage"
+        android:text="https://www.google.co.in" />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="submit"
+        android:textColor="#fafafa"
+        android:background="@color/colorPrimary" />
+</LinearLayout>
