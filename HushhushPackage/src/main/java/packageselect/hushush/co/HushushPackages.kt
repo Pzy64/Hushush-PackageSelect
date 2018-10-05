@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +15,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
 
 
-class PackageSelectActivity :AppCompatActivity() {
+class HushushPackages :AppCompatActivity() {
 
     companion object {
         const val clientToken = "client_token"
@@ -83,7 +82,7 @@ class PackageSelectActivity :AppCompatActivity() {
 
             if (android.os.Build.VERSION.SDK_INT >= 24 && request != null){
                 if (!request.url.toString().startsWith("http://192.168.100.70"))
-                    Toast.makeText(this@PackageSelectActivity,request.url.toString(), Toast.LENGTH_SHORT ).show()
+                    Toast.makeText(this@HushushPackages,request.url.toString(), Toast.LENGTH_SHORT ).show()
                 else
                     webview.loadUrl(request.url.toString())
             }
@@ -94,7 +93,7 @@ class PackageSelectActivity :AppCompatActivity() {
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
             if (url != null){
                 if (!url.toString().startsWith("http://192.168.100.70"))
-                    Toast.makeText(this@PackageSelectActivity,url.toString(), Toast.LENGTH_SHORT ).show()
+                    Toast.makeText(this@HushushPackages,url.toString(), Toast.LENGTH_SHORT ).show()
                 else
                     webview.loadUrl(url.toString())
             }
@@ -108,8 +107,8 @@ class PackageSelectActivity :AppCompatActivity() {
 
         override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
 
-            this@PackageSelectActivity.filePathCallback = filePathCallback
-            this@PackageSelectActivity.fileChooserParams = fileChooserParams
+            this@HushushPackages.filePathCallback = filePathCallback
+            this@HushushPackages.fileChooserParams = fileChooserParams
 
             loadFileChooser()
 
@@ -134,7 +133,7 @@ class PackageSelectActivity :AppCompatActivity() {
         try {
             startActivityForResult(intent, FILECHOOSER_REQUESTCODE)
         } catch (e: ActivityNotFoundException) {
-            this@PackageSelectActivity.filePathCallback = null
+            this@HushushPackages.filePathCallback = null
             Toast.makeText(applicationContext, "Cannot Open Image Chooser", Toast.LENGTH_LONG).show()
         }
     }
