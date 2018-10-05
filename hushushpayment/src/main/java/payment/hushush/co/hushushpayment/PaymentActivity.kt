@@ -42,6 +42,7 @@ class PaymentActivity : AppCompatActivity() {
     private var doubleBackToExitPressedOnce = false
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var fileChooserParams: WebChromeClient.FileChooserParams?= null
 
     private fun makePostUrl(): String = "http://192.168.100.70:3000/api/initapi?" +
             "$clientToken=${intent.getStringExtra(clientToken)}&" +
@@ -78,7 +79,25 @@ class PaymentActivity : AppCompatActivity() {
 
         override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
 
-            return super.shouldOverrideUrlLoading(view, request)
+            if (android.os.Build.VERSION.SDK_INT >= 24 && request != null){
+                if (!request.url.toString().startsWith("http://192.168.100.70"))
+                    Toast.makeText(this@PaymentActivity,request.url.toString(),Toast.LENGTH_SHORT ).show()
+                else
+                    webview.loadUrl(request.url.toString())
+            }
+
+            return true
+        }
+
+        override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+            if (android.os.Build.VERSION.SDK_INT >= 24 && url != null){
+                if (!url.toString().startsWith("http://192.168.100.70"))
+                    Toast.makeText(this@PaymentActivity,url.toString(),Toast.LENGTH_SHORT ).show()
+                else
+                    webview.loadUrl(url.toString())
+            }
+
+            return true
         }
 
     }
@@ -88,20 +107,9 @@ class PaymentActivity : AppCompatActivity() {
         override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
 
             this@PaymentActivity.filePathCallback = filePathCallback
+            this@PaymentActivity.fileChooserParams = fileChooserParams
 
-
-            var intent: Intent? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                intent = fileChooserParams!!.createIntent()
-                intent.type = "image/*"
-            }
-            try {
-                startActivityForResult(intent, FILECHOOSER_REQUESTCODE)
-            } catch (e: ActivityNotFoundException) {
-                this@PaymentActivity.filePathCallback = null
-                Toast.makeText(applicationContext, "Cannot Open Image Chooser", Toast.LENGTH_LONG).show()
-                return false
-            }
+            loadFileChooser()
 
             return true
         }
@@ -111,6 +119,22 @@ class PaymentActivity : AppCompatActivity() {
             return true
         }
 
+    }
+
+    private fun loadFileChooser()   {
+
+
+        var intent: Intent? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            intent = fileChooserParams!!.createIntent()
+            intent.type = "image/*"
+        }
+        try {
+            startActivityForResult(intent, FILECHOOSER_REQUESTCODE)
+        } catch (e: ActivityNotFoundException) {
+            this@PaymentActivity.filePathCallback = null
+            Toast.makeText(applicationContext, "Cannot Open Image Chooser", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -148,17 +172,14 @@ class PaymentActivity : AppCompatActivity() {
     }
 
     private fun getStoragePermission() {
-        /**
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
         if (ContextCompat.checkSelfPermission(this.applicationContext,
                         android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSIONS_REQUEST_STORAGE)
         }
+        else
+            loadFileChooser()
     }
 
     /**
@@ -169,15 +190,14 @@ class PaymentActivity : AppCompatActivity() {
                                             grantResults: IntArray) {
         when (requestCode) {
             PERMISSIONS_REQUEST_STORAGE -> {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-
+                    loadFileChooser()
                 }
                 else    {
                    //permission granted
+                    loadFileChooser()
                 }
             }
         }
     }
-
 }

@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".PaymentActivity">
 
-
-
     <include layout="@layout/content_payment" />
 
 </android.support.design.widget.CoordinatorLayout>
