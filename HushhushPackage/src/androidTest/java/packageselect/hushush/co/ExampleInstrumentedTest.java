@@ -1,4 +1,4 @@
-package payment.hushush.co.hushushpayment;
+package packageselect.hushush.co;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("payment.hushush.co.hushushpayment.test", appContext.getPackageName());
+        assertEquals("packageselect.hushush.co.test", appContext.getPackageName());
     }
 }

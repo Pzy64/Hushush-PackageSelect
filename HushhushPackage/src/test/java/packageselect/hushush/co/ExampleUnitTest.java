@@ -1,4 +1,4 @@
-package payment.hushush.co.hushushpayment;
+package packageselect.hushush.co;
 
 import org.junit.Test;
 

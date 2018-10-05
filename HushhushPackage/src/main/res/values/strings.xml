@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HushhushPackage</string>
+    <string name="title_activity_package_select">PackageSelectActivity</string>
+</resources>

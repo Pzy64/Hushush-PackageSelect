@@ -1,4 +1,4 @@
-package payment.hushush.co.hushushpayment
+package packageselect.hushush.co
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -7,14 +7,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatActivity;
 import android.webkit.*
 import android.widget.Toast
-import kotlinx.android.synthetic.main.content_payment.*
+import kotlinx.android.synthetic.main.content_package_select.*
 
-class PaymentActivity : AppCompatActivity() {
+
+class PackageSelectActivity :AppCompatActivity() {
 
     companion object {
         const val clientToken = "client_token"
@@ -65,7 +67,7 @@ class PaymentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment)
+        setContentView(R.layout.activity_package_select)
 
         webview.settings.javaScriptEnabled = true
         webview.settings.allowFileAccess = true
@@ -81,7 +83,7 @@ class PaymentActivity : AppCompatActivity() {
 
             if (android.os.Build.VERSION.SDK_INT >= 24 && request != null){
                 if (!request.url.toString().startsWith("http://192.168.100.70"))
-                    Toast.makeText(this@PaymentActivity,request.url.toString(),Toast.LENGTH_SHORT ).show()
+                    Toast.makeText(this@PackageSelectActivity,request.url.toString(), Toast.LENGTH_SHORT ).show()
                 else
                     webview.loadUrl(request.url.toString())
             }
@@ -90,9 +92,9 @@ class PaymentActivity : AppCompatActivity() {
         }
 
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            if (android.os.Build.VERSION.SDK_INT >= 24 && url != null){
+            if (url != null){
                 if (!url.toString().startsWith("http://192.168.100.70"))
-                    Toast.makeText(this@PaymentActivity,url.toString(),Toast.LENGTH_SHORT ).show()
+                    Toast.makeText(this@PackageSelectActivity,url.toString(), Toast.LENGTH_SHORT ).show()
                 else
                     webview.loadUrl(url.toString())
             }
@@ -106,8 +108,8 @@ class PaymentActivity : AppCompatActivity() {
 
         override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
 
-            this@PaymentActivity.filePathCallback = filePathCallback
-            this@PaymentActivity.fileChooserParams = fileChooserParams
+            this@PackageSelectActivity.filePathCallback = filePathCallback
+            this@PackageSelectActivity.fileChooserParams = fileChooserParams
 
             loadFileChooser()
 
@@ -132,7 +134,7 @@ class PaymentActivity : AppCompatActivity() {
         try {
             startActivityForResult(intent, FILECHOOSER_REQUESTCODE)
         } catch (e: ActivityNotFoundException) {
-            this@PaymentActivity.filePathCallback = null
+            this@PackageSelectActivity.filePathCallback = null
             Toast.makeText(applicationContext, "Cannot Open Image Chooser", Toast.LENGTH_LONG).show()
         }
     }
@@ -194,7 +196,7 @@ class PaymentActivity : AppCompatActivity() {
                     loadFileChooser()
                 }
                 else    {
-                   //permission granted
+                    //permission granted
                     loadFileChooser()
                 }
             }
