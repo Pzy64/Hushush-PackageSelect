@@ -1,4 +1,4 @@
-package packageselect.hushush.co
+package packageselect.hushush.co.packages
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
+import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.helper.PackagesAdapter
 import packageselect.hushush.co.packages.network.GetPackagesAPI
 

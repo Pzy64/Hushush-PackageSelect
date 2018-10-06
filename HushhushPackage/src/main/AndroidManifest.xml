@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="packageselect.hushush.co">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application>
         <activity
-            android:name=".HushushPackages"
+            android:name=".packages.HushushPackages"
             android:label="@string/title_activity_package_select"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".photoedit.EditActivity"
+            android:label="@string/title_activity_edit"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
