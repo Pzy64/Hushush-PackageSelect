@@ -36,7 +36,6 @@ class HushushPackages :AppCompatActivity() {
         const val checksumHash = "checksumhash"
 
         const val PERMISSIONS_REQUEST_STORAGE = 1000
-        const val FILECHOOSER_RESULTCODE = 1002
         const val FILECHOOSER_REQUESTCODE = 1004
     }
 
@@ -45,7 +44,7 @@ class HushushPackages :AppCompatActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var fileChooserParams: WebChromeClient.FileChooserParams?= null
 
-    private fun makePostUrl(): String = "http://192.168.100.70:3000/api/initapi?" +
+    private fun makePostUrl(): String = "https://test5.htycoons.in/api/initapi?" +
             "$clientToken=${intent.getStringExtra(clientToken)}&" +
             "$bookingId=${intent.getStringExtra(bookingId)}&" +
             "$selectedDate=${intent.getStringExtra(selectedDate)}&" +
@@ -81,7 +80,7 @@ class HushushPackages :AppCompatActivity() {
         override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
 
             if (android.os.Build.VERSION.SDK_INT >= 24 && request != null){
-                if (!request.url.toString().startsWith("http://192.168.100.70"))
+                if (!request.url.toString().startsWith("https://test5.htycoons.in"))
                     Toast.makeText(this@HushushPackages,request.url.toString(), Toast.LENGTH_SHORT ).show()
                 else
                     webview.loadUrl(request.url.toString())
@@ -92,7 +91,7 @@ class HushushPackages :AppCompatActivity() {
 
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
             if (url != null){
-                if (!url.toString().startsWith("http://192.168.100.70"))
+                if (!url.toString().startsWith("https://test5.htycoons.in"))
                     Toast.makeText(this@HushushPackages,url.toString(), Toast.LENGTH_SHORT ).show()
                 else
                     webview.loadUrl(url.toString())
@@ -195,7 +194,7 @@ class HushushPackages :AppCompatActivity() {
                     loadFileChooser()
                 }
                 else    {
-                    //permission granted
+                        //permission granted
                     loadFileChooser()
                 }
             }
