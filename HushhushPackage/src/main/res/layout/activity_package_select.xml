@@ -6,6 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".HushushPackages">
 
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="#44003f"
+        android:animateLayoutChanges="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:fitsSystemWindows="true"
+            app:contentScrim="#44003f"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
+
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/ic_hushush"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+
     <include layout="@layout/content_package_select" />
 
 </android.support.design.widget.CoordinatorLayout>

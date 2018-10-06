@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                android:src="@color/design_default_color_primary" />
+
+            <TextView
+                android:id="@+id/packageName"
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-12dp"
+                android:background="@drawable/bg_package"
+                android:gravity="center"
+                android:text="hello"
+                android:textColor="#fafafa"
+                android:textStyle="bold"
+
+                />
+
+            <TextView
+                android:id="@+id/price"
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:text="₹ 0" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:src="@drawable/bg_dotted_line" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:text="includes" />
+
+            <TextView
+                android:textColor="#44003f"
+                android:id="@+id/items"
+                style="@style/Base.TextAppearance.AppCompat.Tooltip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="12dp"
+                android:text="Cupcakes, 1" />
+
+            <TextView
+                android:id="@+id/packageName"
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_package_select"
+                android:gravity="center"
+                android:text="Select package"
+                android:layout_marginTop="12dp"
+                android:textColor="#fafafa"
+                android:textStyle="bold"
+
+                />
+
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</android.support.constraint.ConstraintLayout>

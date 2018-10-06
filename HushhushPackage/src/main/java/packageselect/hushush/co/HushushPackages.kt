@@ -1,21 +1,20 @@
 package packageselect.hushush.co
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity;
-import android.webkit.*
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
+import packageselect.hushush.co.packages.helper.PackagesAdapter
+import packageselect.hushush.co.packages.network.GetPackagesAPI
 
 
-class HushushPackages :AppCompatActivity() {
+class HushushPackages : AppCompatActivity() {
 
     companion object {
         const val clientToken = "client_token"
@@ -42,9 +41,6 @@ class HushushPackages :AppCompatActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
-    private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    private var fileChooserParams: WebChromeClient.FileChooserParams?= null
-
     private fun makePostUrl(): String = "http://192.168.100.70:3000/api/initapi?" +
             "$clientToken=${intent.getStringExtra(clientToken)}&" +
             "$bookingId=${intent.getStringExtra(bookingId)}&" +
@@ -68,84 +64,38 @@ class HushushPackages :AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_package_select)
 
-        webview.settings.javaScriptEnabled = true
-        webview.settings.allowFileAccess = true
-        webview.webViewClient = SecureWebViewClient()
-        webview.webChromeClient = SecureWebChromeClient()
-
-        webview.loadUrl(makePostUrl())
+        callGetPackagesAPI()
     }
 
-    private inner class SecureWebViewClient : WebViewClient() {
+    private fun callGetPackagesAPI() {
 
-        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        GetPackagesAPI.onPackageRecieved(intent.getStringExtra(clientToken)) { res, status ->
+            when (status) {
+                200 -> {
+                    if (res != null) {
+                        val packages = res.body()
+                        if (packages != null) {
+                            recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+                            recyclerView.adapter = PackagesAdapter(packages,
+                                    intent.getStringExtra(seatCount)
+                                    )
+                        }
+                    }
 
-            if (android.os.Build.VERSION.SDK_INT >= 24 && request != null){
-                if (!request.url.toString().startsWith("http://192.168.100.70"))
-                    Toast.makeText(this@HushushPackages,request.url.toString(), Toast.LENGTH_SHORT ).show()
-                else
-                    webview.loadUrl(request.url.toString())
+                }
+
+
             }
-
-            return true
         }
-
-        override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            if (url != null){
-                if (!url.toString().startsWith("http://192.168.100.70"))
-                    Toast.makeText(this@HushushPackages,url.toString(), Toast.LENGTH_SHORT ).show()
-                else
-                    webview.loadUrl(url.toString())
-            }
-
-            return true
-        }
-
     }
 
-    private inner class SecureWebChromeClient : WebChromeClient() {
 
-        override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
-
-            this@HushushPackages.filePathCallback = filePathCallback
-            this@HushushPackages.fileChooserParams = fileChooserParams
-
-            loadFileChooser()
-
-            return true
-        }
-
-        override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
-            result!!.confirm()
-            return true
-        }
-
-    }
-
-    private fun loadFileChooser()   {
-
-
-        var intent: Intent? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            intent = fileChooserParams!!.createIntent()
-            intent.type = "image/*"
-        }
-        try {
-            startActivityForResult(intent, FILECHOOSER_REQUESTCODE)
-        } catch (e: ActivityNotFoundException) {
-            this@HushushPackages.filePathCallback = null
-            Toast.makeText(applicationContext, "Cannot Open Image Chooser", Toast.LENGTH_LONG).show()
-        }
+    private fun loadFileChooser() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILECHOOSER_REQUESTCODE) {
-            if (filePathCallback == null)
-                return
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                filePathCallback!!.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data))
-            }
 
         }
 
@@ -153,10 +103,6 @@ class HushushPackages :AppCompatActivity() {
 
 
     override fun onDestroy() {
-        webview.clearCache(true)
-        webview.clearFormData()
-        webview.clearHistory()
-        webview.clearMatches()
         super.onDestroy()
     }
 
@@ -172,14 +118,13 @@ class HushushPackages :AppCompatActivity() {
 
     }
 
-    private fun getStoragePermission() {
+    private fun getStoragePermissionAndLoadFileChooser() {
         if (ContextCompat.checkSelfPermission(this.applicationContext,
                         android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSIONS_REQUEST_STORAGE)
-        }
-        else
+        } else
             loadFileChooser()
     }
 
@@ -193,8 +138,7 @@ class HushushPackages :AppCompatActivity() {
             PERMISSIONS_REQUEST_STORAGE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     loadFileChooser()
-                }
-                else    {
+                } else {
                     //permission granted
                     loadFileChooser()
                 }
