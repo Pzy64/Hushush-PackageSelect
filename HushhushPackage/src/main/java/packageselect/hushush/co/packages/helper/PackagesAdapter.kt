@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.package_card.view.*
+import org.jetbrains.anko.intentFor
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.dao.Packages
+import packageselect.hushush.co.photoedit.EditActivity
 
 
 class PackagesAdapter(val pkg: Packages, val seatCount: String) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
@@ -39,6 +41,10 @@ class PackagesAdapter(val pkg: Packages, val seatCount: String) : RecyclerView.A
                     item += ", "
                 }
                 items.text = item
+
+                card.setOnClickListener {
+                    context.startActivity(context.intentFor<EditActivity>())
+                }
             }
         }
 

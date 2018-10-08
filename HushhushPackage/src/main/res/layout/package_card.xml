@@ -5,6 +5,7 @@
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="12dp"
@@ -74,7 +75,7 @@
                 android:text="Cupcakes, 1" />
 
             <TextView
-                android:id="@+id/packageName"
+                android:id="@+id/selectPackage"
                 style="@style/Base.TextAppearance.AppCompat.Headline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

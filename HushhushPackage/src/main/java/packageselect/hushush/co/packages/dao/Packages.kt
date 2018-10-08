@@ -1,5 +1,6 @@
 package packageselect.hushush.co.packages.dao
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
 data class Packages(
