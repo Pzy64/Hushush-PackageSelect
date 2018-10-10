@@ -48,41 +48,19 @@ class AddTextDialog() : DialogFragment() {
         if (arguments != null) {
             text.setText(arguments!!.getString(TEXT, ""))
 
-            previewText.text = arguments!!.getString(TEXT, "")
-            previewText.setTextColor(arguments!!.getInt(COLOR, Color.WHITE))
-            if (isColorDark(arguments!!.getInt(COLOR, Color.WHITE)))
-                previewBackground.setCardBackgroundColor(Color.parseColor("#dadada"))
-            else
-                previewBackground.setCardBackgroundColor(Color.parseColor("#202020"))
+            text.setTextColor(arguments!!.getInt(COLOR, Color.WHITE))
         }
 
         colorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        colorRv.adapter = ColorAdapter() { color ->
-            previewText.setTextColor(color)
-            if (isColorDark(color))
-                previewBackground.setCardBackgroundColor(Color.parseColor("#dadada"))
-            else
-                previewBackground.setCardBackgroundColor(Color.parseColor("#202020"))
+        colorRv.adapter = ColorAdapter { color ->
+            text.setTextColor(color)
 
         }
 
-        text.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                previewText.text = s.toString()
-            }
-        })
 
         apply.setOnClickListener {
             if (listener != null) {
-                listener!!.editCompleted(previewText.text.toString(), previewText.currentTextColor, previewText.typeface)
+                listener!!.editCompleted(text.text.toString(), text.currentTextColor, text.typeface)
                 dialog.dismiss()
             }
         }
@@ -95,8 +73,7 @@ class AddTextDialog() : DialogFragment() {
         typefaceRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         typefaceRv.adapter = TypefaceAdapter(typefaces) { typeface ->
             if (typeface != null)
-                previewText.typeface = typeface
-
+                text.typeface = typeface
         }
 
     }

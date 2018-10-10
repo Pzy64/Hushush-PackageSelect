@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -30,11 +31,17 @@ class EditActivity : AppCompatActivity() {
     private var screenSizeX = 0
     private var screenSizeY = 0
 
-    val photoEditor by lazy {
+    private val photoEditor by lazy {
         PhotoEditor.Builder(this, image)
                 .setPinchTextScalable(true)
                 .build()
     }
+
+    private var currentText = ""
+    private var currentColor = Color.WHITE
+    private var currentTypeface: Typeface? = null
+    private var currentTypefaceName = ""
+    private var currentView: View? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,8 +80,8 @@ class EditActivity : AppCompatActivity() {
 
                 addTextDialog.show(supportFragmentManager, "ADD_TEXT")
                 addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
-                    override fun editCompleted(text: String, color: Int,typeface: Typeface) {
-                        photoEditor.editText(rootView, typeface ,text, color)
+                    override fun editCompleted(text: String, color: Int, typeface: Typeface) {
+                        photoEditor.editText(rootView, typeface, text, color)
                     }
                 })
             }
@@ -90,10 +97,22 @@ class EditActivity : AppCompatActivity() {
             val addTextDialog = AddTextDialog()
             addTextDialog.show(supportFragmentManager, "ADD_TEXT")
             addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
+
                 override fun editCompleted(text: String, color: Int, typeface: Typeface) {
-                    photoEditor.addText(typeface, text, color)
+
+                    currentColor = color
+                    currentTypeface = typeface
+                    currentText = text
+
+                    if (currentView == null)
+                        photoEditor.addText(currentTypeface,currentText, currentColor)
+                    else
+                        photoEditor.editText(currentView, currentTypeface, currentText, currentColor)
+
                     help.visibility = View.VISIBLE
+
                 }
+
             })
         }
 
