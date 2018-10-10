@@ -1,17 +1,13 @@
 package packageselect.hushush.co.packages
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
 import packageselect.hushush.co.R
-import packageselect.hushush.co.packages.helper.PackagesAdapter
+import packageselect.hushush.co.packages.adapters.PackagesAdapter
 import packageselect.hushush.co.packages.network.GetPackagesAPI
 
 
@@ -34,10 +30,6 @@ class HushushPackages : AppCompatActivity() {
         const val screenSize = "screen_size"
         const val callbackUrl = "callback_url"
         const val checksumHash = "checksumhash"
-
-        const val PERMISSIONS_REQUEST_STORAGE = 1000
-        const val FILECHOOSER_RESULTCODE = 1002
-        const val FILECHOOSER_REQUESTCODE = 1004
     }
 
     private var doubleBackToExitPressedOnce = false
@@ -77,34 +69,16 @@ class HushushPackages : AppCompatActivity() {
                         val packages = res.body()
                         if (packages != null) {
                             recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-                            recyclerView.adapter = PackagesAdapter(packages,
-                                    intent.getStringExtra(seatCount)
-                                    )
+                            recyclerView.adapter = PackagesAdapter(
+                                    packages,
+                                    intent.getStringExtra(seatCount),
+                                    intent.getStringExtra(screenSize)
+                            )
                         }
                     }
-
                 }
-
-
             }
         }
-    }
-
-
-    private fun loadFileChooser() {
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == FILECHOOSER_REQUESTCODE) {
-
-        }
-
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onBackPressed() {
@@ -117,33 +91,5 @@ class HushushPackages : AppCompatActivity() {
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
         Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
 
-    }
-
-    private fun getStoragePermissionAndLoadFileChooser() {
-        if (ContextCompat.checkSelfPermission(this.applicationContext,
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    PERMISSIONS_REQUEST_STORAGE)
-        } else
-            loadFileChooser()
-    }
-
-    /**
-     * Handles the result of the request for location permissions.
-     */
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        when (requestCode) {
-            PERMISSIONS_REQUEST_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    loadFileChooser()
-                } else {
-                    //permission granted
-                    loadFileChooser()
-                }
-            }
-        }
     }
 }

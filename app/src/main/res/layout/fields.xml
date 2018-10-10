@@ -115,7 +115,7 @@
         android:layout_height="wrap_content"
         android:hint="screen_size"
         android:inputType="textShortMessage"
-        android:text="10" />
+        android:text="2160x1080" />
 
     <EditText
         android:id="@+id/callback_url"

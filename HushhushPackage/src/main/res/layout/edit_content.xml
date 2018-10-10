@@ -36,11 +36,6 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:visibility="gone"
-        android:background="#212121"
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <include layout="@layout/editor_view"/>
 
 </android.support.constraint.ConstraintLayout>
