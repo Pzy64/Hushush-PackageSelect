@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="64dp">
+
+    <FrameLayout
+        android:layout_margin="8dp"
+        android:id="@+id/card"
+        android:background="?selectableItemBackground"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="#fafafa"
+            android:background="@drawable/bg_typeface"
+            android:id="@+id/typefacePreview"
+            android:text="Test font"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp" />
+    </FrameLayout>
+
+</FrameLayout>

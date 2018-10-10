@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -72,8 +73,8 @@ class EditActivity : AppCompatActivity() {
 
                 addTextDialog.show(supportFragmentManager, "ADD_TEXT")
                 addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
-                    override fun editCompleted(text: String, color: Int) {
-                        photoEditor.editText(rootView, text, color)
+                    override fun editCompleted(text: String, color: Int,typeface: Typeface) {
+                        photoEditor.editText(rootView, typeface ,text, color)
                     }
                 })
             }
@@ -89,8 +90,8 @@ class EditActivity : AppCompatActivity() {
             val addTextDialog = AddTextDialog()
             addTextDialog.show(supportFragmentManager, "ADD_TEXT")
             addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
-                override fun editCompleted(text: String, color: Int) {
-                    photoEditor.addText(text, color)
+                override fun editCompleted(text: String, color: Int, typeface: Typeface) {
+                    photoEditor.addText(typeface, text, color)
                     help.visibility = View.VISIBLE
                 }
             })

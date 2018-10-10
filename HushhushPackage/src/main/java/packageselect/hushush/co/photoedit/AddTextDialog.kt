@@ -1,6 +1,7 @@
 package packageselect.hushush.co.photoedit
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
@@ -12,15 +13,19 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.add_text_dialog.*
 import packageselect.hushush.co.R
 import packageselect.hushush.co.photoedit.adapters.ColorAdapter
+import packageselect.hushush.co.photoedit.adapters.TypefaceAdapter
 
 class AddTextDialog() : DialogFragment() {
 
     companion object {
         const val COLOR = "COLOR"
+        const val TYPEFACE = "TYPEFACE"
         const val TEXT = "TEXT"
     }
 
     private var listener: OnEditCompletedListener? = null
+
+    private var typefaces = LinkedHashMap<String, Typeface>()
 
     override fun onStart() {
         super.onStart()
@@ -77,7 +82,7 @@ class AddTextDialog() : DialogFragment() {
 
         apply.setOnClickListener {
             if (listener != null) {
-                listener!!.editCompleted(previewText.text.toString(), previewText.currentTextColor)
+                listener!!.editCompleted(previewText.text.toString(), previewText.currentTextColor, previewText.typeface)
                 dialog.dismiss()
             }
         }
@@ -85,18 +90,38 @@ class AddTextDialog() : DialogFragment() {
         cancel.setOnClickListener {
             dialog.dismiss()
         }
+
+        loadTypefaces()
+        typefaceRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        typefaceRv.adapter = TypefaceAdapter(typefaces) { typeface ->
+            if (typeface != null)
+                previewText.typeface = typeface
+
+        }
+
     }
 
     private fun isColorDark(color: Int): Boolean {
         val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-        return (darkness > 0.4)
+        return (darkness > 0.2)
     }
 
     fun setOnEditCompletedListener(listener: OnEditCompletedListener) {
         this.listener = listener
     }
 
-    interface OnEditCompletedListener {
-        fun editCompleted(text: String, color: Int)
+    private fun loadTypefaces() {
+        val fonts = context!!.assets.list("fonts")
+        if (fonts != null && context != null) {
+            for (i in fonts) {
+                typefaces[i] = Typeface.createFromAsset(context!!.assets, "fonts/$i")
+            }
+        }
     }
+
+    interface OnEditCompletedListener {
+        fun editCompleted(text: String, color: Int,typeface: Typeface)
+    }
+
+
 }

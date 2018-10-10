@@ -64,7 +64,7 @@ class ColorAdapter(val itemClick: (Int) -> Unit) : RecyclerView.Adapter<ColorAda
             with(view) {
                 buildColorPickerView(color, Color.parseColor(colorString))
 
-                this.setOnClickListener {
+                card.setOnClickListener {
                     itemClick(Color.parseColor(colorString))
                 }
             }
