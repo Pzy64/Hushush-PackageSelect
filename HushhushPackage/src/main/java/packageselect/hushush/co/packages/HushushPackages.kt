@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
+import org.jetbrains.anko.intentFor
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.adapters.PackagesAdapter
 import packageselect.hushush.co.packages.network.GetPackagesAPI
+import packageselect.hushush.co.photoedit.EditActivity
 
 
 class HushushPackages : AppCompatActivity() {
@@ -58,6 +60,9 @@ class HushushPackages : AppCompatActivity() {
         setContentView(R.layout.activity_package_select)
 
         callGetPackagesAPI()
+
+        //todo remove below line
+        startActivity(intentFor<EditActivity>(screenSize to intent.getStringExtra(screenSize)))
     }
 
     private fun callGetPackagesAPI() {

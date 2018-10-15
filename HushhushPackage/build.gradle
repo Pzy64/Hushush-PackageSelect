@@ -42,8 +42,8 @@ dependencies {
     implementation('com.theartofdev.edmodo:android-image-cropper:2.7.0', {
         exclude group: 'com.android.support', module: 'exifinterface'
     })
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation project(':gesturedetector')
 }
