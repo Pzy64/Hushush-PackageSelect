@@ -1,6 +1,5 @@
 package packageselect.hushush.co.photoedit.adapters
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,7 +9,7 @@ import kotlinx.android.synthetic.main.typeface_card.view.*
 import packageselect.hushush.co.R
 
 
-class TypefaceAdapter(val typefaces: LinkedHashMap<String, Typeface>, val itemClick: (Typeface?) -> Unit) : RecyclerView.Adapter<TypefaceAdapter.ViewHolder>() {
+class TypefaceAdapter(val typefaces: LinkedHashMap<String, Typeface>, val itemClick: (Typeface?, String) -> Unit) : RecyclerView.Adapter<TypefaceAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(LayoutInflater
@@ -28,9 +27,9 @@ class TypefaceAdapter(val typefaces: LinkedHashMap<String, Typeface>, val itemCl
         fun bind(typeface: String) {
             with(view) {
                 typefacePreview.typeface = typefaces[typeface]
-                typefacePreview.text = typeface.substring(0, typeface.length-4)
+                typefacePreview.text = typeface.substring(0, typeface.length - 4)
                 card.setOnClickListener {
-                    itemClick(typefaces[typeface])
+                    itemClick(typefaces[typeface], typeface)
                 }
             }
         }

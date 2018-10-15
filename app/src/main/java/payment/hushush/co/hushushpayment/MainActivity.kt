@@ -34,5 +34,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
 
+        submit.performClick()
+
     }
 }

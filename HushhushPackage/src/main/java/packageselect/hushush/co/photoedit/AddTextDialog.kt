@@ -5,23 +5,24 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.robertlevonyan.components.kex.toast
 import kotlinx.android.synthetic.main.add_text_dialog.*
 import packageselect.hushush.co.R
 import packageselect.hushush.co.photoedit.adapters.ColorAdapter
 import packageselect.hushush.co.photoedit.adapters.TypefaceAdapter
 
-class AddTextDialog() : DialogFragment() {
+class AddTextDialog : DialogFragment() {
 
     companion object {
         const val COLOR = "COLOR"
         const val TYPEFACE = "TYPEFACE"
         const val TEXT = "TEXT"
     }
+
+    private var selectedTypefaceName = ""
 
     private var listener: OnEditCompletedListener? = null
 
@@ -45,12 +46,6 @@ class AddTextDialog() : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (arguments != null) {
-            text.setText(arguments!!.getString(TEXT, ""))
-
-            text.setTextColor(arguments!!.getInt(COLOR, Color.WHITE))
-        }
-
         colorRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         colorRv.adapter = ColorAdapter { color ->
             text.setTextColor(color)
@@ -60,7 +55,7 @@ class AddTextDialog() : DialogFragment() {
 
         apply.setOnClickListener {
             if (listener != null) {
-                listener!!.editCompleted(text.text.toString(), text.currentTextColor, text.typeface)
+                listener!!.editCompleted(text.text.toString(), text.currentTextColor, text.typeface, selectedTypefaceName)
                 dialog.dismiss()
             }
         }
@@ -71,16 +66,23 @@ class AddTextDialog() : DialogFragment() {
 
         loadTypefaces()
         typefaceRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        typefaceRv.adapter = TypefaceAdapter(typefaces) { typeface ->
-            if (typeface != null)
+        typefaceRv.adapter = TypefaceAdapter(typefaces) { typeface, typefaceName ->
+            if (typeface != null) {
                 text.typeface = typeface
+                selectedTypefaceName = typefaceName
+            }
         }
 
-    }
+        if (arguments != null) {
+            text.setText(arguments!!.getString(TEXT, ""))
+            text.setTextColor(arguments!!.getInt(COLOR, Color.WHITE))
+            context!!.toast(arguments!!.getString(TYPEFACE)?: "hello")
+            if (typefaces.contains(arguments!!.getString(TYPEFACE))) {
+                text.typeface = Typeface.createFromAsset(context!!.assets, "fonts/${arguments!!.getString(TYPEFACE)}")
+                selectedTypefaceName = arguments!!.getString(TYPEFACE) ?: ""
+            }
+        }
 
-    private fun isColorDark(color: Int): Boolean {
-        val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-        return (darkness > 0.2)
     }
 
     fun setOnEditCompletedListener(listener: OnEditCompletedListener) {
@@ -97,7 +99,7 @@ class AddTextDialog() : DialogFragment() {
     }
 
     interface OnEditCompletedListener {
-        fun editCompleted(text: String, color: Int,typeface: Typeface)
+        fun editCompleted(text: String, color: Int, typeface: Typeface, typefaceName: String)
     }
 
 

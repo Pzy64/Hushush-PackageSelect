@@ -4,7 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
@@ -13,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.UiThread;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -54,6 +58,14 @@ public class PhotoEditor implements BrushViewChangeListener {
     private Typeface mDefaultTextTypeface;
     private Typeface mDefaultEmojiTypeface;
 
+    View textRootView;
+    TextView textInputTv;
+    FrameLayout frmBorder;
+    ImageView imgClose;
+
+    float currentX = 0f;
+    float currentY = 0f;
+    float scale = 1f;
 
     private PhotoEditor(Builder builder) {
         this.context = builder.context;
@@ -127,12 +139,14 @@ public class PhotoEditor implements BrushViewChangeListener {
      * @param colorCodeTextView text color to be displayed
      */
     @SuppressLint("ClickableViewAccessibility")
-    public void addText(@Nullable Typeface textTypeface, String text, final int colorCodeTextView) {
+    public View addText(@Nullable Typeface textTypeface, String text, final int colorCodeTextView) {
         brushDrawingView.setBrushDrawingMode(false);
-        final View textRootView = getLayout(ViewType.TEXT);
-        final TextView textInputTv = textRootView.findViewById(R.id.tvPhotoEditorText);
-        final ImageView imgClose = textRootView.findViewById(R.id.imgPhotoEditorClose);
-        final FrameLayout frmBorder = textRootView.findViewById(R.id.frmBorder);
+
+        textRootView = getLayout(ViewType.TEXT);
+        textInputTv = textRootView.findViewById(R.id.tvPhotoEditorText);
+        imgClose = textRootView.findViewById(R.id.imgPhotoEditorClose);
+        frmBorder = textRootView.findViewById(R.id.frmBorder);
+
 
         textInputTv.setText(text);
         textInputTv.setTextColor(colorCodeTextView);
@@ -158,9 +172,50 @@ public class PhotoEditor implements BrushViewChangeListener {
                 }
             }
         });
-
         textRootView.setOnTouchListener(multiTouchListener);
         addViewToParent(textRootView, ViewType.TEXT);
+
+
+        multiTouchListener.setOnMyTouchListener(new MultiTouchListener.MyTouchListener() {
+            @Override
+            public void onTouch(float x, float y) {
+                currentX = x;
+                currentY = y;
+
+                parentView.setDrawingCacheEnabled(true);
+                parentView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
+                Bitmap drawingCache = parentView.getDrawingCache();
+
+
+                Log.d("YYY", drawingCache.getWidth() + " " + drawingCache.getHeight());
+
+                Canvas c = new Canvas(drawingCache);
+
+
+                Paint paint = new Paint();
+                paint.setTypeface(textInputTv.getTypeface());
+                paint.setColor(textInputTv.getCurrentTextColor());
+                paint.setTextAlign(Paint.Align.CENTER);
+                paint.setTextSize(textInputTv.getTextSize());
+                paint.setAntiAlias(true);
+
+                c.drawBitmap(drawingCache,0,0,null);
+                c.drawText("!!!!!!!!!!!!!!!!!!!!", currentX+ drawingCache.getWidth()/2,
+                        currentY+drawingCache.getHeight()/2,
+                        paint);
+
+                parentView.getSource().setImageBitmap(drawingCache);
+
+
+            }
+
+            @Override
+            public void onScale(float scale) {
+                Log.d("YYY", scale + " scale");
+            }
+        });
+
+        return textRootView;
     }
 
 
@@ -647,12 +702,74 @@ public class PhotoEditor implements BrushViewChangeListener {
                         try {
                             FileOutputStream out = new FileOutputStream(file, false);
                             if (parentView != null) {
+
+                                // image.compress(Bitmap.CompressFormat.JPEG,100,out);
+
+
+                                // parentView.removeView(parentView.getSource());
+                                // Bitmap text = viewToBitmap(parentView, image.getWidth(), image.getHeight());
+
+                                // text.compress(Bitmap.CompressFormat.JPEG,100,out);
+
+/*
+                                Bitmap mutableBitmap = image.copy(Bitmap.Config.ARGB_8888, true);
+
+                                Canvas canvas = new Canvas(mutableBitmap);
+
+                                textInputTv.setDrawingCacheEnabled(true);
+
+                                textInputTv.measure(View.MeasureSpec.makeMeasureSpec(canvas.getWidth(), View.MeasureSpec.EXACTLY),
+                                        View.MeasureSpec.makeMeasureSpec(canvas.getHeight(), View.MeasureSpec.EXACTLY));
+                                textInputTv.layout(0, 0, textInputTv.getMeasuredWidth(), textInputTv.getMeasuredHeight());
+                             //   textInputTv.draw(canvas);
+                                canvas.drawBitmap(textInputTv.getDrawingCache(), 0, 0, null);
+                                textInputTv.setDrawingCacheEnabled(false);
+
+                                mutableBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+
+
+
+*//*
+
                                 parentView.setDrawingCacheEnabled(true);
+                                parentView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                                 Bitmap drawingCache = saveSettings.isTransparencyEnabled()
                                         ? BitmapUtil.removeTransparency(parentView.getDrawingCache())
                                         : parentView.getDrawingCache();
-                                drawingCache.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+                                Bitmap image = ((BitmapDrawable) parentView.getSource().getDrawable()).getBitmap();
+
+                                float scale = image.getWidth() / drawingCache.getWidth();
+
+                                Log.d("YYY", drawingCache.getWidth() + " " + drawingCache.getHeight());
+                                Log.d("YYY", scale + " ");
+
+
+                                Canvas c = new Canvas(image);
+
+                                c.drawBitmap(image, 0, 0, null);
+                                Paint paint = new Paint();
+                                paint.setTypeface(textInputTv.getTypeface());
+                                paint.setColor(textInputTv.getCurrentTextColor());
+
+                                paint.setTextSize(textInputTv.getTextSize() * scale);
+                                paint.setTextScaleX(textRootView.getScaleX());
+                                paint.setAntiAlias(true);
+
+                                c.drawText(textInputTv.getText().toString(), currentX * scale, currentY * scale, paint);
+
+                                image.compress(Bitmap.CompressFormat.JPEG, 100, out);
+*/
+                              /*  parentView.setDrawingCacheEnabled(true);
+                                parentView.setDrawingCacheQuality(100);
+                                Bitmap drawingCache = saveSettings.isTransparencyEnabled()
+                                        ? BitmapUtil.removeTransparency(parentView.getDrawingCache())
+                                        : parentView.getDrawingCache();
+                                drawingCache.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                                */
                             }
+
                             out.flush();
                             out.close();
                             Log.d(TAG, "Filed Saved Successfully");
@@ -686,6 +803,17 @@ public class PhotoEditor implements BrushViewChangeListener {
         });
     }
 
+    public static float convertPixelsToDp(float px, Context context) {
+        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    public static Bitmap viewToBitmap(View view, int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+
     /**
      * Save the edited image as bitmap
      *
@@ -700,7 +828,7 @@ public class PhotoEditor implements BrushViewChangeListener {
     /**
      * Save the edited image as bitmap
      *
-     * @param saveSettings   builder for multiple save options {@link SaveSettings}
+     * @param saveSettings builder for multiple save options {@link SaveSettings}
      * @param onSaveBitmap callback for saving image as bitmap
      * @see OnSaveBitmap
      */

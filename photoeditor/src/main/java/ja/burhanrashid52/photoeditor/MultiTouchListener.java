@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 /**
  * Created on 18/01/2017.
@@ -20,7 +19,7 @@ class MultiTouchListener implements OnTouchListener {
 
     private static final int INVALID_POINTER_ID = -1;
     private final GestureDetector mGestureListener;
-    private boolean isRotateEnabled = true;
+    private boolean isRotateEnabled = false;
     private boolean isTranslateEnabled = true;
     private boolean isScaleEnabled = true;
     private float minimumScale = 0.5f;
@@ -39,6 +38,7 @@ class MultiTouchListener implements OnTouchListener {
     private OnGestureControl mOnGestureControl;
     private boolean mIsTextPinchZoomable;
     private OnPhotoEditorListener mOnPhotoEditorListener;
+    private MyTouchListener myTouchListener = null;
 
     MultiTouchListener(@Nullable View deleteView, RelativeLayout parentView,
                        ImageView photoEditImageView, boolean isTextPinchZoomable,
@@ -143,6 +143,15 @@ class MultiTouchListener implements OnTouchListener {
                     float currY = event.getY(pointerIndexMove);
                     if (!mScaleGestureDetector.isInProgress()) {
                         adjustTranslation(view, currX - mPrevX, currY - mPrevY);
+
+
+                        float[] deltaVector = {currX - mPrevX, currY - mPrevY};
+                        view.getMatrix().mapVectors(deltaVector);
+
+                        if (myTouchListener != null)
+                            myTouchListener.onTouch(view.getTranslationX() + deltaVector[0],
+                                    view.getTranslationY() + deltaVector[1]);
+
                     }
                 }
                 break;
@@ -270,5 +279,14 @@ class MultiTouchListener implements OnTouchListener {
                 mOnGestureControl.onLongClick();
             }
         }
+    }
+
+    public void setOnMyTouchListener(MyTouchListener listener) {
+        myTouchListener = listener;
+    }
+
+    public interface MyTouchListener {
+        void onTouch(float x, float y);
+        void onScale(float scale);
     }
 }

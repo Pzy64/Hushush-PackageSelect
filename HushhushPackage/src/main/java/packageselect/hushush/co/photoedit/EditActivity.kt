@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.robertlevonyan.components.kex.set
@@ -24,6 +25,7 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
+import java.lang.Exception
 
 
 class EditActivity : AppCompatActivity() {
@@ -40,7 +42,7 @@ class EditActivity : AppCompatActivity() {
     private var currentText = ""
     private var currentColor = Color.WHITE
     private var currentTypeface: Typeface? = null
-    private var currentTypefaceName = ""
+    private var currentTypefaceName: String = ""
     private var currentView: View? = null
 
 
@@ -69,48 +71,29 @@ class EditActivity : AppCompatActivity() {
                 toast("Screen size format error")
         }
 
-        photoEditor.setOnPhotoEditorListener(object : OnPhotoEditorListener {
-            override fun onEditTextChangeListener(rootView: View?, text: String?, colorCode: Int) {
-                val addTextDialog = AddTextDialog()
-
-                addTextDialog.arguments = Bundle().apply {
-                    putString(AddTextDialog.TEXT, text)
-                    putInt(AddTextDialog.COLOR, colorCode)
-                }
-
-                addTextDialog.show(supportFragmentManager, "ADD_TEXT")
-                addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
-                    override fun editCompleted(text: String, color: Int, typeface: Typeface) {
-                        photoEditor.editText(rootView, typeface, text, color)
-                    }
-                })
-            }
-
-            override fun onStartViewChangeListener(viewType: ViewType?) {}
-            override fun onRemoveViewListener(numberOfAddedViews: Int) {}
-            override fun onRemoveViewListener(viewType: ViewType?, numberOfAddedViews: Int) {}
-            override fun onAddViewListener(viewType: ViewType?, numberOfAddedViews: Int) {}
-            override fun onStopViewChangeListener(viewType: ViewType?) {}
-        })
-
         addText.setOnClickListener {
             val addTextDialog = AddTextDialog()
+
+            addTextDialog.arguments = Bundle().apply {
+                putString(AddTextDialog.TEXT, currentText)
+                putInt(AddTextDialog.COLOR, currentColor)
+                putString(AddTextDialog.TYPEFACE, currentTypefaceName)
+            }
+
             addTextDialog.show(supportFragmentManager, "ADD_TEXT")
             addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
 
-                override fun editCompleted(text: String, color: Int, typeface: Typeface) {
+                override fun editCompleted(text: String, color: Int, typeface: Typeface, typefaceName: String) {
 
                     currentColor = color
                     currentTypeface = typeface
                     currentText = text
+                    currentTypefaceName = typefaceName
 
                     if (currentView == null)
-                        photoEditor.addText(currentTypeface,currentText, currentColor)
+                        currentView = photoEditor.addText(currentTypeface, currentText, currentColor)
                     else
                         photoEditor.editText(currentView, currentTypeface, currentText, currentColor)
-
-                    help.visibility = View.VISIBLE
-
                 }
 
             })
@@ -121,6 +104,29 @@ class EditActivity : AppCompatActivity() {
         }
         redo.setOnClickListener {
             photoEditor.redo()
+        }
+
+        photoEditor.setOnPhotoEditorListener(object : OnPhotoEditorListener {
+            override fun onEditTextChangeListener(rootView: View?, text: String?, colorCode: Int) {}
+            override fun onStartViewChangeListener(viewType: ViewType?) {}
+            override fun onRemoveViewListener(numberOfAddedViews: Int) {}
+            override fun onRemoveViewListener(viewType: ViewType?, numberOfAddedViews: Int) {
+                currentView = null
+            }
+
+            override fun onAddViewListener(viewType: ViewType?, numberOfAddedViews: Int) {}
+            override fun onStopViewChangeListener(viewType: ViewType?) {}
+        })
+
+        saveAndProceed.setOnClickListener {
+
+            photoEditor.saveAsFile(Environment.getExternalStorageDirectory().absolutePath + "/b.jpg",object: PhotoEditor.OnSaveListener{
+                override fun onSuccess(imagePath: String) {
+                     }
+
+                override fun onFailure(exception: Exception) {
+                }
+            })
         }
 
     }
@@ -166,5 +172,12 @@ class EditActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+
+
+    inner class Editor : View() {
+
+
     }
 }
