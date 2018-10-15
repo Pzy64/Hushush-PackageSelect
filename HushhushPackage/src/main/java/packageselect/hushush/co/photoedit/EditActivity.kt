@@ -7,16 +7,11 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import com.robertlevonyan.components.kex.set
 import com.robertlevonyan.components.kex.toast
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import ja.burhanrashid52.photoeditor.OnPhotoEditorListener
-import ja.burhanrashid52.photoeditor.PhotoEditor
-import ja.burhanrashid52.photoeditor.ViewType
 import kotlinx.android.synthetic.main.edit_activity.*
 import kotlinx.android.synthetic.main.edit_content.*
 import kotlinx.android.synthetic.main.editor_view.*
@@ -25,7 +20,6 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
-import java.lang.Exception
 
 
 class EditActivity : AppCompatActivity() {
@@ -33,17 +27,10 @@ class EditActivity : AppCompatActivity() {
     private var screenSizeX = 0
     private var screenSizeY = 0
 
-    private val photoEditor by lazy {
-        PhotoEditor.Builder(this, image)
-                .setPinchTextScalable(true)
-                .build()
-    }
-
     private var currentText = ""
     private var currentColor = Color.WHITE
     private var currentTypeface: Typeface? = null
     private var currentTypefaceName: String = ""
-    private var currentView: View? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,43 +77,13 @@ class EditActivity : AppCompatActivity() {
                     currentText = text
                     currentTypefaceName = typefaceName
 
-                    if (currentView == null)
-                        currentView = photoEditor.addText(currentTypeface, currentText, currentColor)
-                    else
-                        photoEditor.editText(currentView, currentTypeface, currentText, currentColor)
+                    //
                 }
 
             })
         }
-
-        undo.setOnClickListener {
-            photoEditor.undo()
-        }
-        redo.setOnClickListener {
-            photoEditor.redo()
-        }
-
-        photoEditor.setOnPhotoEditorListener(object : OnPhotoEditorListener {
-            override fun onEditTextChangeListener(rootView: View?, text: String?, colorCode: Int) {}
-            override fun onStartViewChangeListener(viewType: ViewType?) {}
-            override fun onRemoveViewListener(numberOfAddedViews: Int) {}
-            override fun onRemoveViewListener(viewType: ViewType?, numberOfAddedViews: Int) {
-                currentView = null
-            }
-
-            override fun onAddViewListener(viewType: ViewType?, numberOfAddedViews: Int) {}
-            override fun onStopViewChangeListener(viewType: ViewType?) {}
-        })
 
         saveAndProceed.setOnClickListener {
-
-            photoEditor.saveAsFile(Environment.getExternalStorageDirectory().absolutePath + "/b.jpg",object: PhotoEditor.OnSaveListener{
-                override fun onSuccess(imagePath: String) {
-                     }
-
-                override fun onFailure(exception: Exception) {
-                }
-            })
         }
 
     }
@@ -158,7 +115,7 @@ class EditActivity : AppCompatActivity() {
                             val scaledBitmap = Bitmap.createScaledBitmap(bitmap, screenSizeX, screenSizeY, false)
                             uiThread {
                                 selectImageLayout.visibility = View.GONE
-                                image.source.set(scaledBitmap)
+                                //  todo set image here
                                 editorView.visibility = View.VISIBLE
                             }
 
@@ -174,10 +131,5 @@ class EditActivity : AppCompatActivity() {
         }
     }
 
-
-
-    inner class Editor : View() {
-
-
-    }
 }
+
