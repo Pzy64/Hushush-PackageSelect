@@ -17,6 +17,7 @@ import android.graphics.drawable.ShapeDrawable
 class ColorAdapter(val itemClick: (Int) -> Unit) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
 
     val colors = arrayListOf(
+            "#000000","#FFFFFF",
             "#FFEBEE","#FFCDD2","#EF9A9A","#E57373","#EF5350","#F44336","#E53935","#D32F2F","#C62828",
             "#B71C1C","#FF8A80","#FF5252","#FF1744","#D50000","#FCE4EC","#F8BBD0","#F48FB1","#F06292",
             "#EC407A","#E91E63","#D81B60","#C2185B","#AD1457","#880E4F","#FF80AB","#FF4081","#F50057",
@@ -45,7 +46,7 @@ class ColorAdapter(val itemClick: (Int) -> Unit) : RecyclerView.Adapter<ColorAda
             "#D7CCC8","#BCAAA4","#A1887F","#8D6E63","#795548","#6D4C41","#5D4037","#4E342E","#3E2723",
             "#FAFAFA","#F5F5F5","#EEEEEE","#E0E0E0","#BDBDBD","#9E9E9E","#757575","#616161","#424242",
             "#212121","#ECEFF1","#CFD8DC","#B0BEC5","#90A4AE","#78909C","#607D8B","#546E7A","#455A64",
-            "#37474F","#263238","#000000","#FFFFFF"
+            "#37474F","#263238"
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =

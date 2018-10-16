@@ -6,64 +6,30 @@
     android:layout_height="match_parent"
     android:background="#2d2d2d">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
         <FrameLayout
             android:id="@+id/canvas"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         </FrameLayout>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/saveAndProceed"
+            android:layout_gravity="right|bottom"
+            android:layout_margin="16dp"
+            app:backgroundTint="#44003f"
+            android:layout_width="wrap_content"
+            app:srcCompat="@drawable/ic_check"
+            android:layout_height="wrap_content" />
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/bottombar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            app:cardBackgroundColor="#212121">
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/changeText"
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="84dp"
+            app:backgroundTint="#f3b447"
+            android:layout_width="wrap_content"
+            app:srcCompat="@drawable/ic_text"
+            android:layout_height="wrap_content" />
 
-
-
-            <LinearLayout
-                android:id="@+id/addText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="4dp"
-                android:background="?selectableItemBackground"
-                android:focusable="true"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    app:srcCompat="@drawable/ic_text" />
-
-                <TextView
-                    style="@style/Base.TextAppearance.AppCompat.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Change Text"
-                    android:textColor="#fafafa"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-        </android.support.v7.widget.CardView>
-    </RelativeLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/saveAndProceed"
-        app:layout_anchor="@+id/bottombar"
-        app:layout_anchorGravity="right"
-        android:layout_margin="16dp"
-        app:backgroundTint="#44003f"
-        android:layout_width="wrap_content"
-        app:srcCompat="@drawable/ic_check"
-        android:layout_height="wrap_content" />
 </android.support.design.widget.CoordinatorLayout>
