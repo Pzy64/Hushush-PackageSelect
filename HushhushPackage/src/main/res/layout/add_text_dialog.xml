@@ -4,29 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#2a2a2a"
-    android:paddingStart="8dp"
-    android:paddingLeft="8dp"
-    android:paddingTop="16dp"
-    android:paddingEnd="8dp"
-    android:paddingRight="8dp">
+android:padding="12dp">
 
     <LinearLayout
-        android:scrollbars="vertical"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbars="vertical">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="#222222">
+            app:cardBackgroundColor="#2f2f2f">
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/textInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="4dp"
                 app:hintTextAppearance="@style/TextAppearance.AppCompat.Inverse">
 
                 <android.support.design.widget.TextInputEditText
@@ -36,7 +32,7 @@
                     android:background="@android:color/transparent"
                     android:hint="add text"
                     android:inputType="textShortMessage"
-                    android:minHeight="50dp"
+                    android:minHeight="64dp"
                     android:textColor="#fafafa"
                     android:textColorHint="#aaaaaa" />
             </android.support.design.widget.TextInputLayout>
@@ -44,7 +40,6 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="#202020">
@@ -57,38 +52,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:text="TEXT SIZE"
-                    android:textColor="#dadada"
-                    android:textSize="12sp" />
-
-                <android.support.v7.widget.AppCompatSeekBar
-                    android:id="@+id/textSize"
-                    style="@style/Base.Widget.AppCompat.SeekBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:max="150"
-                    android:progress="20" />
-
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
-
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="#202020">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_margin="2dp"
                     android:text="TYPEFACE"
                     android:textColor="#dadada"
                     android:textSize="12sp" />
@@ -104,7 +68,8 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="#232323">
+            app:cardBackgroundColor="#232323"
+            app:cardCornerRadius="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -114,7 +79,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_margin="2dp"
                     android:text="COLOR"
                     android:textColor="#dadada"
                     android:textSize="12sp" />
@@ -128,6 +93,7 @@
 
 
         </android.support.v7.widget.CardView>
+
 
         <RelativeLayout
             android:layout_width="match_parent"

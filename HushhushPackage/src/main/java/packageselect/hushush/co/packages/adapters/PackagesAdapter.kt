@@ -9,11 +9,12 @@ import kotlinx.android.synthetic.main.package_card.view.*
 import org.jetbrains.anko.intentFor
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
+import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Packages
 import packageselect.hushush.co.photoedit.EditActivity
 
 
-class PackagesAdapter(val pkg: Packages, val seatCount: String, val screenSize:String) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
+class PackagesAdapter(val pkg: Packages, val hushushData: HushushData) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(LayoutInflater
@@ -31,12 +32,12 @@ class PackagesAdapter(val pkg: Packages, val seatCount: String, val screenSize:S
             with(view) {
                 Glide.with(this).load(data.picUrl).into(image)
                 packageName.text = data.name
-                price.text = "₹ " + (((seatCount.toFloat() - data.defaultTicketCount) * data.extraOneUserAmount) + data.defaultPackageAmount).toString()
+                price.text = "₹ " + (((hushushData.seatCount.toFloat() - data.defaultTicketCount) * data.extraOneUserAmount) + data.defaultPackageAmount).toString()
                 var item = ""
                 for (i in data.items) {
                     item += i.itemname
                     if (i.category == "person")
-                        item += ": $seatCount"
+                        item += ": ${hushushData.seatCount}"
                     else
                         item += ": 1"
                     item += ", "
@@ -44,7 +45,7 @@ class PackagesAdapter(val pkg: Packages, val seatCount: String, val screenSize:S
                 items.text = item
 
                 card.setOnClickListener {
-                    context.startActivity(context.intentFor<EditActivity>(HushushPackages.screenSize to screenSize))
+                    context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData))
                 }
             }
         }

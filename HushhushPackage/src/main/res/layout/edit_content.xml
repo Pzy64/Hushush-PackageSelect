@@ -8,34 +8,40 @@
     tools:context=".photoedit.EditActivity"
     tools:showIn="@layout/edit_activity">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/selectImageLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:focusable="true"
+
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <TextView
             android:id="@+id/selectImage"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Button"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="#44003f"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:text="SELECT IMAGE"
-          />
+            android:textColor="#44003f"
+            android:textSize="25sp" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/resolution"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/selectImage"
+            android:gravity="center_horizontal"
+            android:text="Image resolution must be greater than or erual to 3000x2000" />
+    </RelativeLayout>
 
-    <include layout="@layout/editor_view"/>
+  <include layout="@layout/editor_view" />
 
 </android.support.constraint.ConstraintLayout>

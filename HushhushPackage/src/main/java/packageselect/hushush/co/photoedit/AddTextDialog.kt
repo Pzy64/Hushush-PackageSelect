@@ -21,12 +21,9 @@ class AddTextDialog : DialogFragment() {
         const val COLOR = "COLOR"
         const val TYPEFACE = "TYPEFACE"
         const val TEXT = "TEXT"
-        const val TEXTSIZE = "TEXTSIZE"
     }
 
     private var selectedTypefaceName = ""
-    private var selectedTextSize = 20
-
     private var listener: OnEditCompletedListener? = null
 
     private var typefaces = LinkedHashMap<String, Typeface>()
@@ -58,7 +55,7 @@ class AddTextDialog : DialogFragment() {
 
         apply.setOnClickListener {
             if (listener != null) {
-                listener!!.editCompleted(text.text.toString(), text.currentTextColor, text.typeface, selectedTypefaceName,selectedTextSize)
+                listener!!.editCompleted(text.text.toString(), text.currentTextColor, text.typeface, selectedTypefaceName)
                 dialog.dismiss()
             }
         }
@@ -76,32 +73,9 @@ class AddTextDialog : DialogFragment() {
             }
         }
 
-        textSize.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (progress  < 35)
-                text.textSize = progress.toFloat()
-                else
-                    text.textSize = 35f
-                selectedTextSize = progress
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-        })
-
         if (arguments != null) {
-           selectedTextSize =  arguments!!.getInt(TEXTSIZE, 20)
-            textSize.progress =selectedTextSize
-            if (selectedTextSize < 35)
-                text.textSize = selectedTextSize.toFloat()
-            else
-                text.textSize = 35f
             text.setText(arguments!!.getString(TEXT, ""))
             text.setTextColor(arguments!!.getInt(COLOR, Color.WHITE))
-            context!!.toast(arguments!!.getString(TYPEFACE)?: "hello")
             if (typefaces.contains(arguments!!.getString(TYPEFACE))) {
                 text.typeface = Typeface.createFromAsset(context!!.assets, "fonts/${arguments!!.getString(TYPEFACE)}")
                 selectedTypefaceName = arguments!!.getString(TYPEFACE) ?: ""
@@ -124,7 +98,7 @@ class AddTextDialog : DialogFragment() {
     }
 
     interface OnEditCompletedListener {
-        fun editCompleted(text: String, color: Int, typeface: Typeface, typefaceName: String, textSize:Int)
+        fun editCompleted(text: String, color: Int, typeface: Typeface, typefaceName: String)
     }
 
 

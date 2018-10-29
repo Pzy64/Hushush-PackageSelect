@@ -15,7 +15,8 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/saveAndProceed"
             android:layout_gravity="right|bottom"
-            android:layout_margin="16dp"
+            android:layout_margin="8dp"
+            app:fabSize="mini"
             app:backgroundTint="#44003f"
             android:layout_width="wrap_content"
             app:srcCompat="@drawable/ic_check"
@@ -25,8 +26,9 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/changeText"
             android:layout_gravity="right|bottom"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="84dp"
+            android:layout_marginBottom="64dp"
+            android:layout_marginRight="8dp"
+            app:fabSize="mini"
             app:backgroundTint="#f3b447"
             android:layout_width="wrap_content"
             app:srcCompat="@drawable/ic_text"

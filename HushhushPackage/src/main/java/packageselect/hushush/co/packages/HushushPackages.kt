@@ -9,13 +9,17 @@ import kotlinx.android.synthetic.main.content_package_select.*
 import org.jetbrains.anko.intentFor
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.adapters.PackagesAdapter
-import packageselect.hushush.co.packages.network.GetPackagesAPI
+import packageselect.hushush.co.packages.dao.HushushData
+import packageselect.hushush.co.packages.network.PackagesAPI
 import packageselect.hushush.co.photoedit.EditActivity
 
 
 class HushushPackages : AppCompatActivity() {
 
     companion object {
+
+        const val DATA = "HUSHUSHDATA"
+
         const val clientToken = "client_token"
         const val bookingId = "booking_id"
         const val selectedDate = "selected_date"
@@ -36,23 +40,28 @@ class HushushPackages : AppCompatActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
-    private fun makePostUrl(): String = "http://192.168.100.70:3000/api/initapi?" +
-            "$clientToken=${intent.getStringExtra(clientToken)}&" +
-            "$bookingId=${intent.getStringExtra(bookingId)}&" +
-            "$selectedDate=${intent.getStringExtra(selectedDate)}&" +
-            "$movieName=${intent.getStringExtra(movieName)}&" +
-            "$mLocation=${intent.getStringExtra(mLocation)}&" +
-            "$theatreName=${intent.getStringExtra(theatreName)}&" +
-            "$showTime=${intent.getStringExtra(showTime)}&" +
-            "$screenNumber=${intent.getStringExtra(screenNumber)}&" +
-            "$seatCount=${intent.getStringExtra(seatCount)}&" +
-            "$customerName=${intent.getStringExtra(customerName)}&" +
-            "$mobileNumber=${intent.getStringExtra(mobileNumber)}&" +
-            "$userEmail=${intent.getStringExtra(userEmail)}&" +
-            "$seatId=${intent.getStringExtra(seatId)}&" +
-            "$screenSize=${intent.getStringExtra(screenSize)}&" +
-            "$callbackUrl=${intent.getStringExtra(callbackUrl)}&" +
-            "$checksumHash=${intent.getStringExtra(checksumHash)}"
+    private val data: HushushData by lazy { makeDataObject() }
+
+    private fun makeDataObject(): HushushData {
+        val data = HushushData()
+
+        data.clientToken = intent.getStringExtra(clientToken)
+        data.bookingId = intent.getStringExtra(bookingId)
+        data.selectedDate = intent.getStringExtra(selectedDate)
+        data.movieName = intent.getStringExtra(movieName)
+        data.mLocation = intent.getStringExtra(mLocation)
+        data.theatreName = intent.getStringExtra(theatreName)
+        data.showTime = intent.getStringExtra(showTime)
+        data.screenNumber = intent.getStringExtra(screenNumber)
+        data.seatCount = intent.getStringExtra(seatCount)
+        data.customerName = intent.getStringExtra(customerName)
+        data.mobileNumber = intent.getStringExtra(mobileNumber)
+        data.userEmail = intent.getStringExtra(userEmail)
+        data.seatId = intent.getStringExtra(seatId)
+        data.screenSize = intent.getStringExtra(screenSize)
+
+        return data
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,12 +71,12 @@ class HushushPackages : AppCompatActivity() {
         callGetPackagesAPI()
 
         //todo remove below line
-        startActivity(intentFor<EditActivity>(screenSize to intent.getStringExtra(screenSize)))
+        startActivity(intentFor<EditActivity>(DATA to data))
     }
 
     private fun callGetPackagesAPI() {
 
-        GetPackagesAPI.onPackageRecieved(intent.getStringExtra(clientToken)) { res, status ->
+        PackagesAPI.onPackageRecieved(intent.getStringExtra(clientToken)) { res, status ->
             when (status) {
                 200 -> {
                     if (res != null) {
@@ -76,8 +85,7 @@ class HushushPackages : AppCompatActivity() {
                             recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
                             recyclerView.adapter = PackagesAdapter(
                                     packages,
-                                    intent.getStringExtra(seatCount),
-                                    intent.getStringExtra(screenSize)
+                                    data
                             )
                         }
                     }

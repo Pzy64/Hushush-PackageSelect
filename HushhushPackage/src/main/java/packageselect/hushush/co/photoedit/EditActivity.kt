@@ -4,12 +4,17 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import com.almeros.android.multitouch.MoveGestureDetector
 import com.robertlevonyan.components.kex.toast
@@ -22,17 +27,21 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
+import packageselect.hushush.co.packages.dao.HushushData
+import packageselect.hushush.co.packages.network.PackagesAPI
 import java.io.File
 import java.io.FileOutputStream
 
 
 class EditActivity : AppCompatActivity() {
 
+    private val STORAGE_REQ = 1001
+
     private var textX = 0f
     private var textY = 0f
 
-    private var textXNotFixed = 0f
-    private var textYNotFixed = 0f
+    private var deltaX = 0f
+    private var deltaY = 0f
 
     private var padding = 40f
 
@@ -45,16 +54,21 @@ class EditActivity : AppCompatActivity() {
     private var translateY = 0f
     private var scaleFactor = 1f
 
+    private var screenTranslateX = 0f
+    private var screenTranslateY = 0f
+    private var screenscaleFactor = 1f
+
+
     private var xCoord = 0f
     private var yCoord = 0f
     private var xCoordContinous = 0f
     private var yCoordContinous = 0f
 
-    private var xCoordContinousNotFixed = 0f
-    private var yCoordContinousNotFixed = 0f
 
     private var scaleFocusX = 0f
     private var scaleFocusY = 0f
+
+    private var isScaling = false
 
     private var touchX = -1f
     private var touchY = -1f
@@ -70,8 +84,10 @@ class EditActivity : AppCompatActivity() {
     private var currentColor = Color.WHITE
     private var currentTypeface: Typeface? = null
     private var currentTypefaceName: String = ""
-    private var currentTextSize = 20
+    private var currentTextSize = 30
     private val editor: EditorView by lazy { EditorView(this) }
+
+    private lateinit var data: HushushData
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,11 +100,12 @@ class EditActivity : AppCompatActivity() {
 
         setContentView(R.layout.edit_activity)
 
-        val screenSize = intent.getStringExtra(HushushPackages.screenSize)
+
+        data = intent.getSerializableExtra(HushushPackages.DATA) as HushushData
+
+        val screenSize = data.screenSize
 
         editorView.visibility = View.GONE
-
-
 
         extractScreenSize(screenSize)
 
@@ -102,21 +119,18 @@ class EditActivity : AppCompatActivity() {
             xCoordContinous = fixX(event.x)
             yCoordContinous = fixY(event.y)
 
-            xCoordContinousNotFixed = event.x
-            yCoordContinousNotFixed = event.y
-
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+
                     xCoord = fixX(event.x)
                     yCoord = fixY(event.y)
+
                 }
                 MotionEvent.ACTION_UP -> {
                     if (event.x in ((xCoord - 10)..(xCoord + 10))) {
                         touchX = fixX(event.x)
                         if (event.y in ((yCoord - 10)..(yCoord + 10))) {
                             touchY = fixY(event.y)
-
-                            //canvasClicked
                         }
                     }
 
@@ -128,7 +142,9 @@ class EditActivity : AppCompatActivity() {
             true
         }
 
-        selectImage.setOnClickListener {
+        resolution.text = "Image resolution must be \ngreater than or equal to ${data.screenSize}"
+
+        selectImageLayout.setOnClickListener {
             if (screenSizeX != 0 && screenSizeY != 0)
                 CropImage.activity()
                         .setFixAspectRatio(true)
@@ -149,19 +165,17 @@ class EditActivity : AppCompatActivity() {
                 putString(AddTextDialog.TEXT, currentText)
                 putInt(AddTextDialog.COLOR, currentColor)
                 putString(AddTextDialog.TYPEFACE, currentTypefaceName)
-                putInt(AddTextDialog.TEXTSIZE, currentTextSize)
             }
 
             addTextDialog.show(supportFragmentManager, "ADD_TEXT")
             addTextDialog.setOnEditCompletedListener(object : AddTextDialog.OnEditCompletedListener {
 
-                override fun editCompleted(text: String, color: Int, typeface: Typeface, typefaceName: String, textSize: Int) {
+                override fun editCompleted(text: String, color: Int, typeface: Typeface, typefaceName: String) {
 
                     currentColor = color
                     currentTypeface = typeface
                     currentText = text
                     currentTypefaceName = typefaceName
-                    currentTextSize = textSize
 
                 }
 
@@ -169,21 +183,63 @@ class EditActivity : AppCompatActivity() {
         }
 
         saveAndProceed.setOnClickListener {
-            editor.saveImage()
+            saveImage()
         }
 
     }
 
+    private fun saveImage() {
+        android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle("Confirm Action")
+                .setMessage("Save changes and Upload?")
+                .setPositiveButton("YES") { _, _ ->
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+                        getStoragePermission()
+                    else
+                        editor.saveImage()
+
+                }
+                .setNegativeButton("NO") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+    }
+
+    private fun getStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this.applicationContext,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    STORAGE_REQ)
+        } else
+            editor.saveImage()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        when (requestCode) {
+            STORAGE_REQ -> {
+                if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    toast("Can't Save image without storage permission")
+                } else {
+                    editor.saveImage()
+                }
+            }
+        }
+    }
+
 
     private fun fixX(x: Float): Float {
-        val xTranslationFix = x - translateX
-        val xScaleFix = xTranslationFix / scaleFactor
+        val xTranslationFix = x - screenTranslateX
+        val xScaleFix = xTranslationFix / screenscaleFactor
         return xScaleFix
     }
 
     private fun fixY(y: Float): Float {
-        val yTranslationFix = y - translateY
-        val yScaleFix = yTranslationFix / scaleFactor
+        val yTranslationFix = y - screenTranslateY
+        val yScaleFix = yTranslationFix / screenscaleFactor
         return yScaleFix
     }
 
@@ -216,21 +272,35 @@ class EditActivity : AppCompatActivity() {
                             val displayMetrics = DisplayMetrics()
                             windowManager.defaultDisplay.getMetrics(displayMetrics)
                             val width = displayMetrics.widthPixels
-                            val height = (screenSizeY / (screenSizeX / width.toFloat())).toInt()
+                            val height = /*(screenSizeY / (screenSizeX / width.toFloat())).toInt()*/ displayMetrics.heightPixels
 
-                            val thumbnailBitmap = Bitmap.createScaledBitmap(scaledBitmap, width, height, false)
 
                             uiThread {
 
+
+                                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
                                 selectImageLayout.visibility = View.GONE
 
-                                //  todo set image here
+                                /**  to fit width
+                                 *   scaleFactor  = height / screenSizeY.toFloat()
+                                 */
+
+                                /**  to fit height
+                                 */
+                                screenscaleFactor = width / screenSizeY.toFloat()
+                                scaleFactor = screenscaleFactor
+
+                                screenTranslateX = (height - (screenSizeX * screenscaleFactor)) / 2
+                                translateX = screenTranslateX
+
+
                                 editor.setSrc(scaledBitmap)
-                                editor.setThumbnail(thumbnailBitmap)
+
                                 editorView.visibility = View.VISIBLE
 
-                                textX = thumbnailBitmap.width / 2f
-                                textY = thumbnailBitmap.height / 2f + editor.height / 2f - thumbnailBitmap!!.height / 2
+                                textX = screenSizeX / 2f
+                                textY = screenSizeY / 2f
                             }
 
                         } else {
@@ -249,13 +319,14 @@ class EditActivity : AppCompatActivity() {
         override fun onMove(detector: MoveGestureDetector?): Boolean {
             val d = detector!!.focusDelta
 
-
-            if (!(xCoordContinous > textLeft &&
+            if (!(!isScaling &&
+                            xCoordContinous > textLeft &&
                             xCoordContinous < textRight
                             && yCoordContinous > textTop &&
                             yCoordContinous < textBottom)) {
                 translateX += d.x
                 translateY += d.y
+
             }
 
             return true
@@ -266,18 +337,44 @@ class EditActivity : AppCompatActivity() {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             scaleFactor *= detector.scaleFactor // scale change since previous event
             // Don't let the object get too small or too large.
-            scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.5f))
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 3f))
+
+            currentTextSize = (scaleFactor * 100).toInt()
 
             scaleFocusX = detector.focusX
             scaleFocusY = detector.focusY
 
             return true
         }
+
+        override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+
+            isScaling = true
+
+            return super.onScaleBegin(detector)
+
+
+        }
+
+        override fun onScaleEnd(detector: ScaleGestureDetector?) {
+            super.onScaleEnd(detector)
+
+            isScaling = false
+
+        }
     }
 
     private inner class EditorView @JvmOverloads constructor(
             context: Context, attrs: AttributeSet? = null
     ) : View(context, attrs) {
+
+        val textPaint =
+                Paint().apply {
+                    textAlign = Paint.Align.CENTER
+                    color = currentColor
+                    typeface = currentTypeface
+                    textSize = currentTextSize.toFloat()
+                }
 
         private var bitmap: Bitmap? = null
         private var thumbnailBitmap: Bitmap? = null
@@ -289,53 +386,44 @@ class EditActivity : AppCompatActivity() {
 
                 canvas.save()
 
+                Log.d("YYY", "l: $textLeft r: $textRight x: $xCoord del:$deltaX")
 
-
-                if (xCoordContinous > textLeft &&
+                if (
+                        !isScaling &&
+                        xCoordContinous > textLeft &&
                         xCoordContinous < textRight
                         && yCoordContinous > textTop &&
                         yCoordContinous < textBottom) {
 
+
                     textX = xCoordContinous
                     textY = yCoordContinous
 
-                    textXNotFixed = xCoordContinousNotFixed
-                    textYNotFixed = yCoordContinousNotFixed
-
                 }
 
-
-                canvas.translate(translateX, translateY)
-
-
-                canvas.scale(scaleFactor, scaleFactor)
-
+                canvas.translate(screenTranslateX, screenTranslateY)
+                canvas.scale(screenscaleFactor, screenscaleFactor)
 
                 if (bitmap != null)
                     canvas.drawBitmap(bitmap!!, 0f, 0f, null)
 
-                val textPaint =
-                        Paint().apply {
-                            textAlign = Paint.Align.CENTER
-                            color = currentColor
-                            typeface = currentTypeface
-                            textSize = currentTextSize.toFloat()
-                        }
+                textPaint.apply {
+                    color = currentColor
+                    typeface = currentTypeface
+                    textSize = currentTextSize.toFloat()
+                }
 
-
-                canvas.drawText(currentText, textX,
-                        textY,
-                        textPaint)
+                canvas.drawText(currentText, textX, textY, textPaint)
 
                 textLeft = (textX - textPaint.measureText(currentText) / 2) - padding
                 textRight = (textX + textPaint.measureText(currentText) / 2) + padding
                 textTop = (textY + textPaint.fontMetrics.top) - padding
                 textBottom = (textY + textPaint.fontMetrics.bottom) + padding
 
-                // canvas.drawRect(textLeft, textTop, textRight, textBottom, Paint().apply { color = Color.parseColor("#AA000000") })
+                deltaX = ((textRight - textLeft) / 2) - xCoord
+
 
                 canvas.restore()
-
 
             }
             invalidate()
@@ -362,25 +450,15 @@ class EditActivity : AppCompatActivity() {
 
                     canvas.drawBitmap(bitmap!!, 0f, 0f, null)
 
-                    val textPaint =
-                            Paint().apply {
-                                textAlign = Paint.Align.CENTER
-                                color = currentColor
-                                typeface = currentTypeface
-                                textSize = currentTextSize.toFloat()
-                            }
+                    canvas.drawText(currentText, textX, textY, textPaint)
 
-
-                    canvas.drawText(currentText,textX,textY, textPaint)
-
-
-                    val file = File(getExternalStorageDirectory().absolutePath + "/sign.png")
+                    val file = File(getExternalStorageDirectory().absolutePath + "/image.jpg")
 
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
-                        uiThread {
-                            toast("Completed!!")
-                        }
+
+                        callUploadImageAPI(file, data.bookingId, data.clientToken)
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -388,6 +466,22 @@ class EditActivity : AppCompatActivity() {
             }
 
 
+        }
+    }
+
+    fun callUploadImageAPI(image: File, bookingId: String, hushushId: String) {
+
+        PackagesAPI.onUploadComplete(image, bookingId, hushushId) { res, status ->
+
+            when (status) {
+                200 -> {
+                    toast("Upload Complete!!")
+                }
+
+                else -> {
+                    toast("An error has been occurred!!")
+                }
+            }
         }
     }
 
