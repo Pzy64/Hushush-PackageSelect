@@ -38,19 +38,6 @@ class EditActivity : AppCompatActivity() {
 
     private val STORAGE_REQ = 1001
 
-    private var textX = 0f
-    private var textY = 0f
-
-    private var deltaX = 0f
-    private var deltaY = 0f
-
-    private var padding = 40f
-
-    private var textLeft = 0f
-    private var textRight = 0f
-    private var textTop = 0f
-    private var textBottom = 0f
-
     private var translateX = 0f
     private var translateY = 0f
     private var scaleFactor = 1f
@@ -272,9 +259,8 @@ class EditActivity : AppCompatActivity() {
 
                             val displayMetrics = DisplayMetrics()
                             windowManager.defaultDisplay.getMetrics(displayMetrics)
-                            val width = displayMetrics.widthPixels
-                            val height = /*(screenSizeY / (screenSizeX / width.toFloat())).toInt()*/ displayMetrics.heightPixels
-
+                            val height = displayMetrics.widthPixels
+                            val width = /*(screenSizeY / (screenSizeX / width.toFloat())).toInt()*/ displayMetrics.heightPixels
 
                             uiThread {
 
@@ -283,28 +269,37 @@ class EditActivity : AppCompatActivity() {
 
                                 selectImageLayout.visibility = View.GONE
 
-                                /**  to fit width
-                                 *   scaleFactor  = height / screenSizeY.toFloat()
-                                 */
 
-                                /**  to fit height
-                                 */
-                                screenscaleFactor = width / screenSizeY.toFloat()
-                                scaleFactor = screenscaleFactor
 
-                                screenTranslateX = (height - (screenSizeX * screenscaleFactor)) / 2
-                                translateX = screenTranslateX
+                                if (screenSizeX/screenSizeY > width/height) {
+                                    /**  to fit width */
+                                    screenscaleFactor  = width / screenSizeX.toFloat()
+                                    scaleFactor = screenscaleFactor
 
-                                translateX = width / 2f
-                                translateY = height / 2f
+                                    screenTranslateY = (height - (screenSizeY * scaleFactor))/2
+                                    translateY = screenTranslateY
+
+                                    Log.d("YYY", "sS: ${(height - (screenSizeY * scaleFactor))/2}")
+
+                                } else {
+                                    toast("Fit height")
+                                    /**  to fit height */
+                                    screenscaleFactor = height / screenSizeY.toFloat()
+                                    scaleFactor = screenscaleFactor
+
+                                    screenTranslateX = (width - (screenSizeX * screenscaleFactor)) / 2f
+                                    translateX = screenTranslateX
+                                }
+
+
 
 
                                 editor.setSrc(scaledBitmap)
 
                                 editorView.visibility = View.VISIBLE
 
-                                textX = screenSizeX / 2f
-                                textY = screenSizeY / 2f
+                                translateX = screenSizeX / 2f
+                                translateY = screenSizeY / 2f
                             }
 
                         } else {
@@ -323,11 +318,8 @@ class EditActivity : AppCompatActivity() {
         override fun onMove(detector: MoveGestureDetector?): Boolean {
             val d = detector!!.focusDelta
 
-            if (!isScaling) {
                 translateX += d.x
                 translateY += d.y
-
-            }
 
             return true
         }
@@ -377,25 +369,12 @@ class EditActivity : AppCompatActivity() {
                 }
 
         private var bitmap: Bitmap? = null
-        private var thumbnailBitmap: Bitmap? = null
-
 
         override fun onDraw(nullableCanvas: Canvas?) {
             super.onDraw(nullableCanvas)
             nullableCanvas?.let { canvas ->
 
                 canvas.save()
-
-                Log.d("YYY", "l: $textLeft r: $textRight x: $xCoord del:$deltaX")
-
-                if (
-                        !isScaling) {
-
-
-                    textX = translateX
-                    textY = translateY
-
-                }
 
                 canvas.translate(screenTranslateX, screenTranslateY)
                 canvas.scale(screenscaleFactor, screenscaleFactor)
@@ -409,15 +388,7 @@ class EditActivity : AppCompatActivity() {
                     textSize = currentTextSize.toFloat()
                 }
 
-                canvas.drawText(currentText, textX, textY, textPaint)
-
-                textLeft = (textX - textPaint.measureText(currentText) / 2) - padding
-                textRight = (textX + textPaint.measureText(currentText) / 2) + padding
-                textTop = (textY + textPaint.fontMetrics.top) - padding
-                textBottom = (textY + textPaint.fontMetrics.bottom) + padding
-
-                deltaX = ((textRight - textLeft) / 2) - xCoord
-
+                canvas.drawText(currentText, translateX, translateY, textPaint)
 
                 canvas.restore()
 
@@ -430,11 +401,6 @@ class EditActivity : AppCompatActivity() {
             bitmap = image
         }
 
-        fun setThumbnail(thumb: Bitmap) {
-            thumbnailBitmap = thumb
-        }
-
-
         fun saveImage() {
 
             doAsync {
@@ -446,7 +412,7 @@ class EditActivity : AppCompatActivity() {
 
                     canvas.drawBitmap(bitmap!!, 0f, 0f, null)
 
-                    canvas.drawText(currentText, textX, textY, textPaint)
+                    canvas.drawText(currentText, translateX, translateY, textPaint)
 
                     val file = File(externalCacheDir.absolutePath + "/image.jpg")
 
