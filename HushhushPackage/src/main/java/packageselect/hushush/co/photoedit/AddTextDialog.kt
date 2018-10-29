@@ -74,7 +74,7 @@ class AddTextDialog : DialogFragment() {
         }
 
         if (arguments != null) {
-            text.setText(arguments!!.getString(TEXT, ""))
+            text.setText(arguments!!.getString(TEXT, "Add text here..."))
             text.setTextColor(arguments!!.getInt(COLOR, Color.WHITE))
             if (typefaces.contains(arguments!!.getString(TYPEFACE))) {
                 text.typeface = Typeface.createFromAsset(context!!.assets, "fonts/${arguments!!.getString(TYPEFACE)}")

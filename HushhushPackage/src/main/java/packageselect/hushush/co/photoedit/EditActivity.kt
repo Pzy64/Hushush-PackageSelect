@@ -8,7 +8,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Bundle
-import android.os.Environment.getExternalStorageDirectory
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -23,12 +22,14 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.edit_content.*
 import kotlinx.android.synthetic.main.editor_view.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.network.PackagesAPI
+import packageselect.hushush.co.summary.SummaryActivity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -294,6 +295,9 @@ class EditActivity : AppCompatActivity() {
                                 screenTranslateX = (height - (screenSizeX * screenscaleFactor)) / 2
                                 translateX = screenTranslateX
 
+                                translateX = width / 2f
+                                translateY = height / 2f
+
 
                                 editor.setSrc(scaledBitmap)
 
@@ -319,11 +323,7 @@ class EditActivity : AppCompatActivity() {
         override fun onMove(detector: MoveGestureDetector?): Boolean {
             val d = detector!!.focusDelta
 
-            if (!(!isScaling &&
-                            xCoordContinous > textLeft &&
-                            xCoordContinous < textRight
-                            && yCoordContinous > textTop &&
-                            yCoordContinous < textBottom)) {
+            if (!isScaling) {
                 translateX += d.x
                 translateY += d.y
 
@@ -389,15 +389,11 @@ class EditActivity : AppCompatActivity() {
                 Log.d("YYY", "l: $textLeft r: $textRight x: $xCoord del:$deltaX")
 
                 if (
-                        !isScaling &&
-                        xCoordContinous > textLeft &&
-                        xCoordContinous < textRight
-                        && yCoordContinous > textTop &&
-                        yCoordContinous < textBottom) {
+                        !isScaling) {
 
 
-                    textX = xCoordContinous
-                    textY = yCoordContinous
+                    textX = translateX
+                    textY = translateY
 
                 }
 
@@ -452,12 +448,12 @@ class EditActivity : AppCompatActivity() {
 
                     canvas.drawText(currentText, textX, textY, textPaint)
 
-                    val file = File(getExternalStorageDirectory().absolutePath + "/image.jpg")
+                    val file = File(externalCacheDir.absolutePath + "/image.jpg")
 
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
 
-                        callUploadImageAPI(file, data.bookingId, data.clientToken)
+                        startActivity(intentFor<SummaryActivity>())
 
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -468,22 +464,5 @@ class EditActivity : AppCompatActivity() {
 
         }
     }
-
-    fun callUploadImageAPI(image: File, bookingId: String, hushushId: String) {
-
-        PackagesAPI.onUploadComplete(image, bookingId, hushushId) { res, status ->
-
-            when (status) {
-                200 -> {
-                    toast("Upload Complete!!")
-                }
-
-                else -> {
-                    toast("An error has been occurred!!")
-                }
-            }
-        }
-    }
-
 }
 
