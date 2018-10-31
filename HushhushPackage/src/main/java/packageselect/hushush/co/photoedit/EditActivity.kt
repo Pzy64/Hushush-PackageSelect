@@ -426,8 +426,6 @@ class EditActivity : AppCompatActivity() {
                     }
                 }
             }
-
-
         }
     }
 }

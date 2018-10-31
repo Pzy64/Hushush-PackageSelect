@@ -91,7 +91,7 @@ public abstract class TwoFingerGestureDetector extends BaseGestureDetector {
         if (mCurrLen == -1) {
             final float cvx = mCurrFingerDiffX;
             final float cvy = mCurrFingerDiffY;
-            mCurrLen = (float) Math.sqrt(cvx*cvx + cvy*cvy);
+            mCurrLen =(float) Math.sqrt(cvx*cvx + cvy*cvy);
         }
         return mCurrLen;
     }
