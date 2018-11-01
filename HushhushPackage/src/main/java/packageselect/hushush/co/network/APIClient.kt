@@ -1,4 +1,4 @@
-package com.amstertec.ebin.network
+package packageselect.hushush.co.network
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

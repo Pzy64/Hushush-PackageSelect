@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:zpp="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,9 +21,9 @@
             android:layout_height="match_parent"
             android:animateLayoutChanges="true"
             android:fitsSystemWindows="true"
-            zpp:contentScrim="#44003f"
-            zpp:layout_scrollFlags="scroll|exitUntilCollapsed"
-            zpp:titleEnabled="false">
+            app:contentScrim="#44003f"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
 
 
             <ImageView
@@ -37,8 +37,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
 
-                zpp:layout_scrollFlags="scroll|enterAlways"
-                zpp:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

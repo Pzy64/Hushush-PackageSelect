@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:zpp="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/editorView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,10 +16,10 @@
             android:id="@+id/saveAndProceed"
             android:layout_gravity="right|bottom"
             android:layout_margin="8dp"
-            zpp:fabSize="mini"
-            zpp:backgroundTint="#44003f"
+            app:fabSize="mini"
+            app:backgroundTint="#44003f"
             android:layout_width="wrap_content"
-            zpp:srcCompat="@drawable/ic_check"
+            app:srcCompat="@drawable/ic_check"
             android:layout_height="wrap_content" />
 
 
@@ -28,10 +28,10 @@
             android:layout_gravity="right|bottom"
             android:layout_marginBottom="64dp"
             android:layout_marginRight="8dp"
-            zpp:fabSize="mini"
-            zpp:backgroundTint="#f3b447"
+            app:fabSize="mini"
+            app:backgroundTint="#f3b447"
             android:layout_width="wrap_content"
-            zpp:srcCompat="@drawable/ic_text"
+            app:srcCompat="@drawable/ic_text"
             android:layout_height="wrap_content" />
 
 </android.support.design.widget.CoordinatorLayout>
