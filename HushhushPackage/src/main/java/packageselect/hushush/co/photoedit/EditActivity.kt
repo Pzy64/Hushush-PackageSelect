@@ -15,7 +15,6 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
-import com.almeros.android.multitouch.MoveGestureDetector
 import com.robertlevonyan.components.kex.toast
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -29,6 +28,7 @@ import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.network.PackagesAPI
+import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
 import packageselect.hushush.co.summary.SummaryActivity
 import java.io.File
 import java.io.FileOutputStream

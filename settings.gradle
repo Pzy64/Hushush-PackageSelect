@@ -1,1 +1,1 @@
-include ':app', ':HushhushPackage', ':gesture-detector'
+include ':app', ':HushhushPackage'

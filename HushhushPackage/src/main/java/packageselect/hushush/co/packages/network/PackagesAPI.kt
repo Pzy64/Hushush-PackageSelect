@@ -1,15 +1,13 @@
 package packageselect.hushush.co.packages.network
 
-import com.amstertec.ebin.network.APIClient
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import packageselect.hushush.co.network.APIClient
 import packageselect.hushush.co.packages.dao.Packages
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
