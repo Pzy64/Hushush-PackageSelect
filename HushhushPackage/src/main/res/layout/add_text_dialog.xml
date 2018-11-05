@@ -34,7 +34,6 @@ android:padding="12dp">
                     android:background="@android:color/transparent"
                     android:hint="Add text here..."
                     android:inputType="textShortMessage"
-                    android:minHeight="64dp"
                     android:textColor="#fafafa"
                     android:textColorHint="#aaaaaa" />
             </android.support.design.widget.TextInputLayout>
