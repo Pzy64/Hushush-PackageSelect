@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object APIClient {
 
-    const val BASEURL = "http://142.93.208.232"
+    const val BASEURL = "https://demo7495688.mockable.io"
 
     fun getClient(): Retrofit {
 

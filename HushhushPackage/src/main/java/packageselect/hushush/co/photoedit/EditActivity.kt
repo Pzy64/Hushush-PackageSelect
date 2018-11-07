@@ -27,6 +27,8 @@ import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
+import packageselect.hushush.co.packages.dao.Package
+import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.packages.network.PackagesAPI
 import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
 import packageselect.hushush.co.summary.SummaryActivity
@@ -76,6 +78,7 @@ class EditActivity : AppCompatActivity() {
     private val editor: EditorView by lazy { EditorView(this) }
 
     private lateinit var data: HushushData
+    private lateinit var pkg:Package
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,6 +93,7 @@ class EditActivity : AppCompatActivity() {
 
 
         data = intent.getSerializableExtra(HushushPackages.DATA) as HushushData
+        pkg = intent.getSerializableExtra(Pkgs.TAG) as Package
 
         val screenSize = data.screenSize
 
@@ -418,7 +422,7 @@ class EditActivity : AppCompatActivity() {
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
 
-                        startActivity(intentFor<SummaryActivity>(HushushPackages.DATA to data))
+                        startActivity(intentFor<SummaryActivity>(Pkgs.TAG to pkg))
 
                     } catch (e: Exception) {
                         e.printStackTrace()

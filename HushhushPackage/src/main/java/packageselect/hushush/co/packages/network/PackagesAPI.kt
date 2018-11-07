@@ -7,7 +7,7 @@ import okhttp3.ResponseBody
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.network.APIClient
-import packageselect.hushush.co.packages.dao.Packages
+import packageselect.hushush.co.packages.dao.Pkgs
 import retrofit2.Response
 import java.io.File
 
@@ -16,7 +16,7 @@ object PackagesAPI {
 
     fun onPackageRecieved(
             clientToken: String,
-            func: (Response<Packages?>?, status: Int) -> Unit) {
+            func: (Response<Pkgs?>?, status: Int) -> Unit) {
         doAsync {
             try {
                 val service = APIClient.getClient().create(PackagesRequest::class.java)

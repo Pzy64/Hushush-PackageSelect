@@ -1,7 +1,7 @@
 package packageselect.hushush.co.packages.network
 
 import okhttp3.ResponseBody
-import packageselect.hushush.co.packages.dao.Packages
+import packageselect.hushush.co.packages.dao.Pkgs
 import retrofit2.Call
 import retrofit2.http.*
 import okhttp3.RequestBody
@@ -16,7 +16,7 @@ interface PackagesRequest {
     @FormUrlEncoded
     fun getPackages(
             @Field("client_token") clientToken: String
-    ): Call<Packages>
+    ): Call<Pkgs>
 
     @Headers("Accept: application/json")
     @Multipart

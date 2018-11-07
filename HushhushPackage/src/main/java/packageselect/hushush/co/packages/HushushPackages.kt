@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
 import org.jetbrains.anko.intentFor
@@ -70,8 +71,6 @@ class HushushPackages : AppCompatActivity() {
 
         callGetPackagesAPI()
 
-        //todo remove below line
-        startActivity(intentFor<EditActivity>(DATA to data))
     }
 
     private fun callGetPackagesAPI() {
@@ -81,6 +80,7 @@ class HushushPackages : AppCompatActivity() {
                 200 -> {
                     if (res != null) {
                         val packages = res.body()
+
                         if (packages != null) {
                             recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
                             recyclerView.adapter = PackagesAdapter(

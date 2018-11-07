@@ -10,11 +10,12 @@ import org.jetbrains.anko.intentFor
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
-import packageselect.hushush.co.packages.dao.Packages
+import packageselect.hushush.co.packages.dao.Package
+import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.photoedit.EditActivity
 
 
-class PackagesAdapter(val pkg: Packages, val hushushData: HushushData) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
+class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(LayoutInflater
@@ -28,13 +29,13 @@ class PackagesAdapter(val pkg: Packages, val hushushData: HushushData) : Recycle
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(data: Packages.Package) {
+        fun bind(data: Package) {
             with(view) {
                 Glide.with(this).load(data.picUrl).into(image)
                 packageName.text = data.name
-                price.text = "₹ " + (((hushushData.seatCount.toFloat() - data.defaultTicketCount) * data.extraOneUserAmount) + data.defaultPackageAmount).toString()
+                price.text = "₹ " + (((hushushData.seatCount.toFloat() - data.defaultTicketCount.toFloat()) * data.extraOneTicketAmount.toFloat()) + data.extraOneTicketAmount.toFloat()).toString()
                 var item = ""
-                for (i in data.items) {
+                for (i in data.itemIncludes) {
                     item += i.itemname
                     if (i.category == "person")
                         item += ": ${hushushData.seatCount}"
@@ -45,7 +46,7 @@ class PackagesAdapter(val pkg: Packages, val hushushData: HushushData) : Recycle
                 items.text = item
 
                 card.setOnClickListener {
-                    context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData))
+                    context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData, Pkgs.TAG to data))
                 }
             }
         }
