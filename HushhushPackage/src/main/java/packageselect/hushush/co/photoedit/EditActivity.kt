@@ -282,7 +282,6 @@ class EditActivity : AppCompatActivity() {
                                     Log.d("YYY", "sS: ${(height - (screenSizeY * scaleFactor))/2}")
 
                                 } else {
-                                    toast("Fit height")
                                     /**  to fit height */
                                     screenscaleFactor = height / screenSizeY.toFloat()
                                     scaleFactor = screenscaleFactor
@@ -419,7 +418,7 @@ class EditActivity : AppCompatActivity() {
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
 
-                        startActivity(intentFor<SummaryActivity>())
+                        startActivity(intentFor<SummaryActivity>(HushushPackages.DATA to data))
 
                     } catch (e: Exception) {
                         e.printStackTrace()
