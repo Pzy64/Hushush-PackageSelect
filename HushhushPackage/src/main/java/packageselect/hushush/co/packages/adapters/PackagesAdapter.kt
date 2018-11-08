@@ -1,5 +1,7 @@
 package packageselect.hushush.co.packages.adapters
 
+import android.content.Intent
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.photoedit.EditActivity
+import java.util.logging.Handler
 
 
 class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
@@ -52,6 +55,7 @@ class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerVie
 
                     card.setOnClickListener {
                         context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData, Pkgs.TAG to data))
+                        (context as AppCompatActivity).finish()
                     }
                 }
             }

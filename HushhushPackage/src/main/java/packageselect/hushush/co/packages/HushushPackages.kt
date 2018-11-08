@@ -44,8 +44,6 @@ class HushushPackages : AppCompatActivity() {
     private fun makeDataObject(): HushushData {
         val data = HushushData()
 
-
-
         data.clientToken = intent.getStringExtra(clientToken)
         data.bookingId = intent.getStringExtra(bookingId)
         data.selectedDate = intent.getStringExtra(selectedDate)

@@ -1,7 +1,9 @@
 package packageselect.hushush.co.summary
 
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -15,6 +17,8 @@ import packageselect.hushush.co.packages.dao.Pkgs
 import java.io.File
 
 class SummaryActivity : AppCompatActivity() {
+
+    private var doubleBackToExitPressedOnce = false
 
     private lateinit var data: Package
     private lateinit var hushushData: HushushData
@@ -68,6 +72,16 @@ class SummaryActivity : AppCompatActivity() {
         }
         items.text = item
     }
+    override fun onBackPressed() {
 
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed()
+            return
+        }
+        doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
+        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+
+    }
 }
 

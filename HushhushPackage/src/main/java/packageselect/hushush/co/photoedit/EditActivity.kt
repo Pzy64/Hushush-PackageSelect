@@ -6,8 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.*
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -15,6 +17,7 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import com.robertlevonyan.components.kex.toast
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -62,7 +65,6 @@ class EditActivity : AppCompatActivity() {
     private var touchX = -1f
     private var touchY = -1f
 
-
     private lateinit var mScaleDetector: ScaleGestureDetector
     private lateinit var mMoveDetector: MoveGestureDetector
 
@@ -75,6 +77,8 @@ class EditActivity : AppCompatActivity() {
     private var currentTypefaceName: String = ""
     private var currentTextSize = 30
     private val editor: EditorView by lazy { EditorView(this) }
+
+    private var doubleBackToExitPressedOnce = false
 
     private lateinit var data: HushushData
     private lateinit var pkg: Package
@@ -262,17 +266,23 @@ class EditActivity : AppCompatActivity() {
 
                             val displayMetrics = DisplayMetrics()
                             windowManager.defaultDisplay.getMetrics(displayMetrics)
-                            val height = displayMetrics.widthPixels
-                            val width = /*(screenSizeY / (screenSizeX / width.toFloat())).toInt()*/ displayMetrics.heightPixels
+
+
+                            val height: Int
+                            val width: Int
+                            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                                height = displayMetrics.widthPixels
+                                width = displayMetrics.heightPixels
+                            } else {
+                                height = displayMetrics.heightPixels
+                                width = displayMetrics.widthPixels
+                            }
 
                             uiThread {
-
 
                                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
                                 selectImageLayout.visibility = View.GONE
-
-
 
                                 if (screenSizeX / screenSizeY > width / height) {
                                     /**  to fit width */
@@ -422,6 +432,7 @@ class EditActivity : AppCompatActivity() {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
 
                         startActivity(intentFor<SummaryActivity>(Pkgs.TAG to pkg, HushushPackages.DATA to data))
+                        finish()
 
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -429,6 +440,18 @@ class EditActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed()
+            return
+        }
+        doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
+        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+
     }
 }
 

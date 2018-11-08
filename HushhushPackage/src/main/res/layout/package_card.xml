@@ -12,6 +12,7 @@
         custom:cardUseCompatPadding="true">
 
         <LinearLayout
+            android:layout_marginBottom="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -73,20 +74,6 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginBottom="12dp"
                 android:text="Cupcakes, 1" />
-
-            <TextView
-                android:id="@+id/selectPackage"
-                style="@style/Base.TextAppearance.AppCompat.Headline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_package_select"
-                android:gravity="center"
-                android:text="Select package"
-                android:layout_marginTop="12dp"
-                android:textColor="#fafafa"
-                android:textStyle="bold"
-
-                />
 
 
         </LinearLayout>
