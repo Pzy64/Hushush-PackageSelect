@@ -23,7 +23,6 @@ class SummaryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.summary_activity)
         setSupportActionBar(toolbar)
-        toolbar.title = "Preview"
 
         data = intent.getSerializableExtra(Pkgs.TAG) as Package
         hushushData = intent.getSerializableExtra(HushushPackages.DATA) as HushushData
