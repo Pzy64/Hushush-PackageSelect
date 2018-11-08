@@ -19,6 +19,9 @@ class HushushPackages : AppCompatActivity() {
         const val DATA = "HUSHUSHDATA"
 
         const val clientToken = "client_token"
+        const val screenSize = "screen_size"
+        const val seatCount = "seat_count"
+
         const val bookingId = "booking_id"
         const val selectedDate = "selected_date"
         const val movieName = "movie_name"
@@ -26,12 +29,10 @@ class HushushPackages : AppCompatActivity() {
         const val theatreName = "theatre_name"
         const val showTime = "show_time"
         const val screenNumber = "screen_number"
-        const val seatCount = "seat_count"
         const val customerName = "customer_name"
         const val mobileNumber = "mobile_number"
         const val userEmail = "user_email"
         const val seatId = "seat_id"
-        const val screenSize = "screen_size"
         const val callbackUrl = "callback_url"
         const val checksumHash = "checksumhash"
     }
@@ -42,6 +43,8 @@ class HushushPackages : AppCompatActivity() {
 
     private fun makeDataObject(): HushushData {
         val data = HushushData()
+
+
 
         data.clientToken = intent.getStringExtra(clientToken)
         data.bookingId = intent.getStringExtra(bookingId)
