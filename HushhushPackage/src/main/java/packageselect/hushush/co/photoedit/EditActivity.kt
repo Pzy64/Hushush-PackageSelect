@@ -29,7 +29,6 @@ import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
-import packageselect.hushush.co.packages.network.PackagesAPI
 import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
 import packageselect.hushush.co.summary.SummaryActivity
 import java.io.File
@@ -78,7 +77,7 @@ class EditActivity : AppCompatActivity() {
     private val editor: EditorView by lazy { EditorView(this) }
 
     private lateinit var data: HushushData
-    private lateinit var pkg:Package
+    private lateinit var pkg: Package
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -275,15 +274,15 @@ class EditActivity : AppCompatActivity() {
 
 
 
-                                if (screenSizeX/screenSizeY > width/height) {
+                                if (screenSizeX / screenSizeY > width / height) {
                                     /**  to fit width */
-                                    screenscaleFactor  = width / screenSizeX.toFloat()
+                                    screenscaleFactor = width / screenSizeX.toFloat()
                                     scaleFactor = screenscaleFactor
 
-                                    screenTranslateY = (height - (screenSizeY * scaleFactor))/2
+                                    screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
                                     translateY = screenTranslateY
 
-                                    Log.d("YYY", "sS: ${(height - (screenSizeY * scaleFactor))/2}")
+                                    Log.d("YYY", "sS: ${(height - (screenSizeY * scaleFactor)) / 2}")
 
                                 } else {
                                     /**  to fit height */
@@ -321,8 +320,8 @@ class EditActivity : AppCompatActivity() {
         override fun onMove(detector: MoveGestureDetector?): Boolean {
             val d = detector!!.focusDelta
 
-                translateX += d.x
-                translateY += d.y
+            translateX += d.x
+            translateY += d.y
 
             return true
         }
@@ -422,7 +421,7 @@ class EditActivity : AppCompatActivity() {
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
 
-                        startActivity(intentFor<SummaryActivity>(Pkgs.TAG to pkg))
+                        startActivity(intentFor<SummaryActivity>(Pkgs.TAG to pkg, HushushPackages.DATA to data))
 
                     } catch (e: Exception) {
                         e.printStackTrace()

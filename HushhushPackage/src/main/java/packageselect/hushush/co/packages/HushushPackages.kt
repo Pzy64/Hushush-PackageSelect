@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
-import org.jetbrains.anko.intentFor
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.adapters.PackagesAdapter
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.network.PackagesAPI
-import packageselect.hushush.co.photoedit.EditActivity
 
 
 class HushushPackages : AppCompatActivity() {

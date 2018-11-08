@@ -1,13 +1,11 @@
 package packageselect.hushush.co.packages.network
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import packageselect.hushush.co.packages.dao.Pkgs
 import retrofit2.Call
 import retrofit2.http.*
-import okhttp3.RequestBody
-import okhttp3.MultipartBody
-
-
 
 
 interface PackagesRequest {

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.package_card.view.*
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.toast
 import packageselect.hushush.co.R
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
@@ -31,22 +32,27 @@ class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerVie
 
         fun bind(data: Package) {
             with(view) {
-                Glide.with(this).load(data.picUrl).into(image)
-                packageName.text = data.name
-                price.text = "₹ " + (((hushushData.seatCount.toFloat() - data.defaultTicketCount.toFloat()) * data.extraOneTicketAmount.toFloat()) + data.extraOneTicketAmount.toFloat()).toString()
-                var item = ""
-                for (i in data.itemIncludes) {
-                    item += i.itemname
-                    if (i.category == "person")
-                        item += ": ${hushushData.seatCount}"
-                    else
-                        item += ": 1"
-                    item += ", "
-                }
-                items.text = item
+                if (data.defaultTicketCount.toFloatOrNull() == null || data.defaultTicketPrice.toFloatOrNull() == null || data.extraOneTicketAmount.toFloatOrNull() == null) {
+                    context?.toast("Error getting packages!")
+                } else {
+                    Glide.with(this).load(data.picUrl).into(image)
+                    packageName.text = data.name
 
-                card.setOnClickListener {
-                    context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData, Pkgs.TAG to data))
+                    price.text = "₹ " + (((hushushData.seatCount.toFloat() - data.defaultTicketCount.toFloat()) * data.extraOneTicketAmount.toFloat()) + data.extraOneTicketAmount.toFloat()).toString()
+                    var item = ""
+                    for (i in data.itemIncludes) {
+                        item += i.itemname
+                        if (i.category == "person")
+                            item += ": ${hushushData.seatCount}"
+                        else
+                            item += ": 1"
+                        item += ", "
+                    }
+                    items.text = item
+
+                    card.setOnClickListener {
+                        context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData, Pkgs.TAG to data))
+                    }
                 }
             }
         }

@@ -8,8 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
-import com.robertlevonyan.components.kex.toast
 import kotlinx.android.synthetic.main.add_text_dialog.*
 import packageselect.hushush.co.R
 import packageselect.hushush.co.photoedit.adapters.ColorAdapter
