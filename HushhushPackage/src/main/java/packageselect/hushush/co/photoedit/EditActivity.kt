@@ -303,9 +303,6 @@ class EditActivity : AppCompatActivity() {
                                     translateX = screenTranslateX
                                 }
 
-
-
-
                                 editor.setSrc(scaledBitmap)
 
                                 editorView.visibility = View.VISIBLE
@@ -445,6 +442,7 @@ class EditActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
+            setResult(AppCompatActivity.RESULT_CANCELED)
             super.onBackPressed()
             return
         }

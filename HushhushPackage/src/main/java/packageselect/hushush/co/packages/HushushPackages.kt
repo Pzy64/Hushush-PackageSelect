@@ -1,5 +1,6 @@
 package packageselect.hushush.co.packages
 
+import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
@@ -15,7 +16,6 @@ import packageselect.hushush.co.packages.network.PackagesAPI
 class HushushPackages : AppCompatActivity() {
 
     companion object {
-
         const val DATA = "HUSHUSHDATA"
 
         const val clientToken = "client_token"
@@ -69,6 +69,8 @@ class HushushPackages : AppCompatActivity() {
 
         callGetPackagesAPI()
 
+
+
     }
 
     private fun callGetPackagesAPI() {
@@ -95,6 +97,7 @@ class HushushPackages : AppCompatActivity() {
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
+            setResult(AppCompatActivity.RESULT_CANCELED)
             super.onBackPressed()
             return
         }

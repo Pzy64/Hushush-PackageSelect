@@ -1,5 +1,6 @@
 package packageselect.hushush.co.summary
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
@@ -34,9 +35,15 @@ class SummaryActivity : AppCompatActivity() {
         populateView()
 
         calculateTotal()
+
+        selectPackage.setOnClickListener {
+            setResult(AppCompatActivity.RESULT_OK)
+            finish()
+        }
+
     }
 
-    private fun calculateTotal()    {
+    private fun calculateTotal() {
 
         val price = (((hushushData.seatCount.toFloat() - data.defaultTicketCount.toFloat()) * data.extraOneTicketAmount.toFloat()) + data.extraOneTicketAmount.toFloat())
 
@@ -49,7 +56,7 @@ class SummaryActivity : AppCompatActivity() {
         total.text = totalPrice.toString()
     }
 
-    private fun populateView()  {
+    private fun populateView() {
         Glide.with(this)
                 .load(File(externalCacheDir.absolutePath + "/image.jpg"))
                 .apply(RequestOptions()
@@ -72,9 +79,11 @@ class SummaryActivity : AppCompatActivity() {
         }
         items.text = item
     }
+
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
+            setResult(AppCompatActivity.RESULT_CANCELED)
             super.onBackPressed()
             return
         }
