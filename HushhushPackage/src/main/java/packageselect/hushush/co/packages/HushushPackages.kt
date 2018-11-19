@@ -23,11 +23,12 @@ class HushushPackages : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_package_select)
 
+        setResult(SelectPackage.RES_HUSHPACKAGE_CANCEL)
+
         data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
 
         callGetPackagesAPI()
 
-        setResult(SelectPackage.RES_HUSHPACKAGE_CANCEL)
     }
 
     private fun callGetPackagesAPI() {

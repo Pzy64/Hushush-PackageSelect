@@ -96,6 +96,8 @@ class EditActivity : AppCompatActivity() {
 
         setContentView(R.layout.edit_activity)
 
+        setResult(SelectPackage.RES_EDITACTIVITY_CANCEL)
+
 
         data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
         pkg = intent.getSerializableExtra(Pkgs.TAG) as Package
@@ -182,7 +184,6 @@ class EditActivity : AppCompatActivity() {
         saveAndProceed.setOnClickListener {
             saveImage()
         }
-
     }
 
     private fun saveImage() {
@@ -447,7 +448,6 @@ class EditActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
-            setResult(AppCompatActivity.RESULT_CANCELED)
             super.onBackPressed()
             return
         }

@@ -35,9 +35,8 @@ class MainActivity : AppCompatActivity() {
             i.putExtra(SelectPackage.callbackUrl, callback_url.text.toString())
             i.putExtra(SelectPackage.checksumHash, "hash")
             startActivityForResult(i, REQ)
-        }
 
-        submit.performClick()
+        }
 
     }
 

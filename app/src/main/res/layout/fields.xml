@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="submit"
+        android:textColor="#fafafa"
+        android:background="@color/colorPrimary" />
+
     <EditText
         android:id="@+id/client_token"
         android:layout_width="match_parent"
@@ -125,11 +133,5 @@
         android:inputType="textShortMessage"
         android:text="https://www.google.co.in" />
 
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="submit"
-        android:textColor="#fafafa"
-        android:background="@color/colorPrimary" />
+
 </LinearLayout>

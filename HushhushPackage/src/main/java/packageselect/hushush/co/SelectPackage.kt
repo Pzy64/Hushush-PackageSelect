@@ -3,7 +3,6 @@ package packageselect.hushush.co
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import org.jetbrains.anko.toast
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Pkgs
@@ -13,7 +12,8 @@ import packageselect.hushush.co.summary.SummaryActivity
 class SelectPackage : AppCompatActivity() {
 
     companion object {
-        const val DATA = "HUSHUSHDATA"
+
+        internal const val DATA = "HUSHUSHDATA"
 
         const val clientToken = "client_token"
         const val screenSize = "screen_size"
@@ -33,12 +33,16 @@ class SelectPackage : AppCompatActivity() {
         const val callbackUrl = "callback_url"
         const val checksumHash = "checksumhash"
 
-        const val RES_HUSHPACKAGE_CANCEL = 100
-        const val RES_HUSHPACKAGE_OK = 104
-        const val RES_EDITACTIVITY_CANCEL = 101
-        const val RES_EDITACTIVITY_OK = 105
-        const val RES_SUMMARY_CANCEL = 102
-        const val RES_SUMMARY_OK = 103
+        const val packagePrice = "packagePrice"
+        const val packageName = "packageName"
+        const val packageId = "packageId"
+
+        internal const val RES_HUSHPACKAGE_CANCEL = 100
+        internal const val RES_HUSHPACKAGE_OK = 104
+        internal const val RES_EDITACTIVITY_CANCEL = 101
+        internal const val RES_EDITACTIVITY_OK = 105
+        internal const val RES_SUMMARY_CANCEL = 102
+        internal const val RES_SUMMARY_OK = 103
     }
 
     private val REQ_CODE = 1023
@@ -85,11 +89,11 @@ class SelectPackage : AppCompatActivity() {
             when (resultCode) {
 
                 RES_HUSHPACKAGE_CANCEL -> {
-                    toast(" packageselect cancelled!")
+                    setResult(AppCompatActivity.RESULT_CANCELED)
+                    finish()
                 }
 
                 RES_HUSHPACKAGE_OK -> {
-                    toast(" packageselect ok!")
                     if (data != null) {
                         val intent = Intent(this, EditActivity::class.java)
                         intent.putExtra(SelectPackage.DATA, data.getSerializableExtra(SelectPackage.DATA))
@@ -99,12 +103,12 @@ class SelectPackage : AppCompatActivity() {
                 }
 
                 RES_EDITACTIVITY_CANCEL -> {
-                    toast(" edit cancelled!")
+                    setResult(AppCompatActivity.RESULT_CANCELED)
+                    finish()
                 }
 
                 RES_EDITACTIVITY_OK -> {
-                    toast(" edit ok!")
-                    if (data!=null) {
+                    if (data != null) {
                         val intent = Intent(this, SummaryActivity::class.java)
                         intent.putExtra(SelectPackage.DATA, data.getSerializableExtra(SelectPackage.DATA))
                         intent.putExtra(Pkgs.TAG, data.getSerializableExtra(Pkgs.TAG))
@@ -113,11 +117,19 @@ class SelectPackage : AppCompatActivity() {
                 }
 
                 RES_SUMMARY_CANCEL -> {
-                    toast(" summary cancelled!")
+                    setResult(AppCompatActivity.RESULT_CANCELED)
+                    finish()
                 }
 
                 RES_SUMMARY_OK -> {
-                    toast(" summary ok!")
+                    if (data != null) {
+                        val intent = Intent()
+                        intent.putExtra(SelectPackage.packageName, data.getStringExtra(SelectPackage.packageName))
+                        intent.putExtra(SelectPackage.packageId, data.getStringExtra(SelectPackage.packageId))
+                        intent.putExtra(SelectPackage.packagePrice, data.getFloatExtra(SelectPackage.packagePrice,0f))
+                        setResult(AppCompatActivity.RESULT_OK)
+                        finish()
+                    }
                 }
             }
 

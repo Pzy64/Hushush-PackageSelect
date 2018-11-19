@@ -12,7 +12,6 @@ import kotlinx.android.synthetic.main.summary_activity.*
 import kotlinx.android.synthetic.main.summary_content.*
 import packageselect.hushush.co.R
 import packageselect.hushush.co.SelectPackage
-import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
@@ -24,11 +23,15 @@ class SummaryActivity : AppCompatActivity() {
 
     private lateinit var data: Package
     private lateinit var hushushData: HushushData
+    private var totalPrice = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.summary_activity)
         setSupportActionBar(toolbar)
+
+
+        setResult(SelectPackage.RES_SUMMARY_CANCEL)
 
         data = intent.getSerializableExtra(Pkgs.TAG) as Package
         hushushData = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
@@ -38,9 +41,15 @@ class SummaryActivity : AppCompatActivity() {
         calculateTotal()
 
         selectPackage.setOnClickListener {
-            setResult(AppCompatActivity.RESULT_OK)
+
+            val intent = Intent()
+            intent.putExtra(SelectPackage.packageName, data.name)
+            intent.putExtra(SelectPackage.packageId, data.id)
+            intent.putExtra(SelectPackage.packagePrice, totalPrice)
+            setResult(SelectPackage.RES_SUMMARY_OK, intent)
             finish()
         }
+
 
     }
 
@@ -52,7 +61,7 @@ class SummaryActivity : AppCompatActivity() {
         sgst.text = "150"
         discount.text = "21.55"
 
-        val totalPrice = price + cgst.text.toString().toFloat() + +sgst.text.toString().toFloat() - discount.text.toString().toFloat()
+        totalPrice = price + cgst.text.toString().toFloat() + +sgst.text.toString().toFloat() - discount.text.toString().toFloat()
 
         total.text = totalPrice.toString()
     }
@@ -84,7 +93,6 @@ class SummaryActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
-            setResult(AppCompatActivity.RESULT_CANCELED)
             super.onBackPressed()
             return
         }
