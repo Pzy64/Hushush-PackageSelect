@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             i.putExtra(SelectPackage.screenSize, screen_size.text.toString())
             i.putExtra(SelectPackage.callbackUrl, callback_url.text.toString())
             i.putExtra(SelectPackage.checksumHash, "hash")
+            i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivityForResult(i, REQ)
 
         }
@@ -44,9 +45,9 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ) {
             if (resultCode == AppCompatActivity.RESULT_OK) {
-                Toast.makeText(applicationContext, "OK", Toast.LENGTH_SHORT).show()
+               startActivity(Intent(this, SuccessActivity::class.java))
             } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-                Toast.makeText(applicationContext, "CANCELLED", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, ErrorActivity::class.java))
             }
         }
     }

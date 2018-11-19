@@ -47,9 +47,6 @@ class SelectPackage : AppCompatActivity() {
 
     private val REQ_CODE = 1023
 
-
-    private var doubleBackToExitPressedOnce = false
-
     private val data: HushushData by lazy { makeDataObject() }
 
     private fun makeDataObject(): HushushData {
