@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
 import packageselect.hushush.co.R
+import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.adapters.PackagesAdapter
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.network.PackagesAPI
@@ -15,67 +16,23 @@ import packageselect.hushush.co.packages.network.PackagesAPI
 
 class HushushPackages : AppCompatActivity() {
 
-    companion object {
-        const val DATA = "HUSHUSHDATA"
-
-        const val clientToken = "client_token"
-        const val screenSize = "screen_size"
-        const val seatCount = "seat_count"
-
-        const val bookingId = "booking_id"
-        const val selectedDate = "selected_date"
-        const val movieName = "movie_name"
-        const val mLocation = "location"
-        const val theatreName = "theatre_name"
-        const val showTime = "show_time"
-        const val screenNumber = "screen_number"
-        const val customerName = "customer_name"
-        const val mobileNumber = "mobile_number"
-        const val userEmail = "user_email"
-        const val seatId = "seat_id"
-        const val callbackUrl = "callback_url"
-        const val checksumHash = "checksumhash"
-    }
-
     private var doubleBackToExitPressedOnce = false
-
-    private val data: HushushData by lazy { makeDataObject() }
-
-    private fun makeDataObject(): HushushData {
-        val data = HushushData()
-
-        data.clientToken = intent.getStringExtra(clientToken)
-        data.bookingId = intent.getStringExtra(bookingId)
-        data.selectedDate = intent.getStringExtra(selectedDate)
-        data.movieName = intent.getStringExtra(movieName)
-        data.mLocation = intent.getStringExtra(mLocation)
-        data.theatreName = intent.getStringExtra(theatreName)
-        data.showTime = intent.getStringExtra(showTime)
-        data.screenNumber = intent.getStringExtra(screenNumber)
-        data.seatCount = intent.getStringExtra(seatCount)
-        data.customerName = intent.getStringExtra(customerName)
-        data.mobileNumber = intent.getStringExtra(mobileNumber)
-        data.userEmail = intent.getStringExtra(userEmail)
-        data.seatId = intent.getStringExtra(seatId)
-        data.screenSize = intent.getStringExtra(screenSize)
-
-        return data
-    }
-
+    private lateinit var data: HushushData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_package_select)
 
+        data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
+
         callGetPackagesAPI()
 
-
-
+        setResult(SelectPackage.RES_HUSHPACKAGE_CANCEL)
     }
 
     private fun callGetPackagesAPI() {
 
-        PackagesAPI.onPackageRecieved(intent.getStringExtra(clientToken)) { res, status ->
+        PackagesAPI.onPackageRecieved(data.clientToken) { res, status ->
             when (status) {
                 200 -> {
                     if (res != null) {
@@ -97,7 +54,6 @@ class HushushPackages : AppCompatActivity() {
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
-            setResult(AppCompatActivity.RESULT_CANCELED)
             super.onBackPressed()
             return
         }

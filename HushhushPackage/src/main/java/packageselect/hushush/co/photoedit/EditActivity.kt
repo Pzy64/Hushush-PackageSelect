@@ -10,6 +10,7 @@ import android.content.res.Configuration
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
+import android.os.health.PackageHealthStats
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -28,6 +29,7 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
+import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
@@ -95,7 +97,7 @@ class EditActivity : AppCompatActivity() {
         setContentView(R.layout.edit_activity)
 
 
-        data = intent.getSerializableExtra(HushushPackages.DATA) as HushushData
+        data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
         pkg = intent.getSerializableExtra(Pkgs.TAG) as Package
 
         val screenSize = data.screenSize
@@ -428,7 +430,10 @@ class EditActivity : AppCompatActivity() {
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
 
-                        startActivity(intentFor<SummaryActivity>(Pkgs.TAG to pkg, HushushPackages.DATA to data))
+                        val intent = Intent()
+                        intent.putExtra(SelectPackage.DATA, data)
+                        intent.putExtra(Pkgs.TAG, pkg)
+                        setResult(SelectPackage.RES_EDITACTIVITY_OK,intent)
                         finish()
 
                     } catch (e: Exception) {

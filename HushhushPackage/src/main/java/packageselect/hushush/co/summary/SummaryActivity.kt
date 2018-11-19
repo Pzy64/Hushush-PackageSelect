@@ -11,6 +11,7 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.summary_activity.*
 import kotlinx.android.synthetic.main.summary_content.*
 import packageselect.hushush.co.R
+import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
@@ -30,7 +31,7 @@ class SummaryActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         data = intent.getSerializableExtra(Pkgs.TAG) as Package
-        hushushData = intent.getSerializableExtra(HushushPackages.DATA) as HushushData
+        hushushData = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
 
         populateView()
 

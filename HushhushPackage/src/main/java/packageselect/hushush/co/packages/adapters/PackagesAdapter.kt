@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.package_card.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 import packageselect.hushush.co.R
+import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
@@ -54,7 +55,10 @@ class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerVie
                     items.text = item
 
                     card.setOnClickListener {
-                        context.startActivity(context.intentFor<EditActivity>(HushushPackages.DATA to hushushData, Pkgs.TAG to data))
+                        val intent = Intent()
+                        intent.putExtra(SelectPackage.DATA, hushushData)
+                        intent.putExtra(Pkgs.TAG, data)
+                        (context as AppCompatActivity).setResult(SelectPackage.RES_HUSHPACKAGE_OK,intent)
                         (context as AppCompatActivity).finish()
                     }
                 }
