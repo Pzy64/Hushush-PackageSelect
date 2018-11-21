@@ -10,7 +10,6 @@ import android.content.res.Configuration
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
-import android.os.health.PackageHealthStats
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -25,17 +24,14 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.edit_content.*
 import kotlinx.android.synthetic.main.editor_view.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.SelectPackage
-import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
-import packageselect.hushush.co.summary.SummaryActivity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -72,6 +68,9 @@ class EditActivity : AppCompatActivity() {
 
     private var screenSizeX = 0
     private var screenSizeY = 0
+
+    private var scaledHeight = 0
+    private var scaledWidth = 0
 
     private var currentText = ""
     private var currentColor = Color.WHITE
@@ -265,11 +264,8 @@ class EditActivity : AppCompatActivity() {
                     val bitmap = BitmapFactory.decodeStream(imageStream)
                     if (bitmap != null) {
                         if (bitmap.width >= screenSizeX && bitmap.height >= screenSizeY) {
-                            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, screenSizeX, screenSizeY, false)
-
                             val displayMetrics = DisplayMetrics()
                             windowManager.defaultDisplay.getMetrics(displayMetrics)
-
 
                             val height: Int
                             val width: Int
@@ -281,37 +277,86 @@ class EditActivity : AppCompatActivity() {
                                 width = displayMetrics.widthPixels
                             }
 
+
+//                            if (screenSizeX / screenSizeY > width / height) {
+//                                /**  to fit width */
+//                                screenscaleFactor = width / screenSizeX.toFloat()
+//                                scaleFactor = screenscaleFactor
+//
+//                                screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
+//                                translateY = screenTranslateY
+//
+//                                scaledWidth = width
+//                                scaledHeight = (screenSizeY * screenscaleFactor).toInt()
+//
+//                                Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
+//
+//                            } else {
+//                                /**  to fit height */
+//                                screenscaleFactor = height / screenSizeY.toFloat()
+//                                scaleFactor = screenscaleFactor
+//
+//                                screenTranslateX = (width - (screenSizeX * screenscaleFactor)) / 2f
+//                                translateX = screenTranslateX
+//
+//                                scaledHeight = height
+//                                scaledWidth = (screenSizeX * screenscaleFactor).toInt()
+//
+//                                Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
+//                            }
+
+
+                            if (screenSizeX / screenSizeY > width / height) {
+                                /**  to fit width */
+
+                                scaledWidth = width
+                                scaledHeight = (width * (screenSizeX / screenSizeY.toFloat())).toInt()
+
+                                screenscaleFactor = width / scaledWidth.toFloat()
+                                scaleFactor = screenscaleFactor
+
+                                screenTranslateY = (height - (scaledHeight * scaleFactor)) / 2
+                                translateY = screenTranslateY
+
+
+
+                                Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
+
+                            } else {
+                                /**  to fit height */
+
+                                scaledHeight = height
+                                scaledWidth = (height * (screenSizeX / screenSizeY.toFloat())).toInt()
+
+
+                                screenscaleFactor = height / scaledHeight.toFloat()
+                                scaleFactor = screenscaleFactor
+
+                                screenTranslateX = (width - (scaledWidth * screenscaleFactor)) / 2f
+                                translateX = screenTranslateX
+
+
+
+                                Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
+                            }
+
+                            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false)
+                            val scaledBitmapL = Bitmap.createScaledBitmap(bitmap, screenSizeX, screenSizeY, false)
+
                             uiThread {
 
                                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
                                 selectImageLayout.visibility = View.GONE
 
-                                if (screenSizeX / screenSizeY > width / height) {
-                                    /**  to fit width */
-                                    screenscaleFactor = width / screenSizeX.toFloat()
-                                    scaleFactor = screenscaleFactor
 
-                                    screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
-                                    translateY = screenTranslateY
 
-                                    Log.d("YYY", "sS: ${(height - (screenSizeY * scaleFactor)) / 2}")
-
-                                } else {
-                                    /**  to fit height */
-                                    screenscaleFactor = height / screenSizeY.toFloat()
-                                    scaleFactor = screenscaleFactor
-
-                                    screenTranslateX = (width - (screenSizeX * screenscaleFactor)) / 2f
-                                    translateX = screenTranslateX
-                                }
-
-                                editor.setSrc(scaledBitmap)
+                                editor.setSrc(scaledBitmap, scaledBitmapL)
 
                                 editorView.visibility = View.VISIBLE
 
-                                translateX = screenSizeX / 2f
-                                translateY = screenSizeY / 2f
+                                translateX = scaledWidth / 2f
+                                translateY = scaledHeight / 2f
                             }
 
                         } else {
@@ -381,6 +426,7 @@ class EditActivity : AppCompatActivity() {
                 }
 
         private var bitmap: Bitmap? = null
+        private var bitmapL: Bitmap? = null
 
         override fun onDraw(nullableCanvas: Canvas?) {
             super.onDraw(nullableCanvas)
@@ -409,22 +455,24 @@ class EditActivity : AppCompatActivity() {
         }
 
 
-        fun setSrc(image: Bitmap) {
+        fun setSrc(image: Bitmap, imageL: Bitmap) {
             bitmap = image
+            bitmapL = imageL
         }
 
         fun saveImage() {
 
             doAsync {
-                if (bitmap != null) {
+                if (bitmap != null && bitmapL != null) {
 
                     val image = Bitmap.createBitmap(screenSizeX, screenSizeY, Bitmap.Config.ARGB_8888)
                     val canvas = Canvas(image)
 
 
-                    canvas.drawBitmap(bitmap!!, 0f, 0f, null)
+                    canvas.drawBitmap(bitmapL!!, 0f, 0f, null)
 
-                    canvas.drawText(currentText, translateX, translateY, textPaint)
+                    textPaint.textSize = textPaint.textSize * (screenSizeX / scaledWidth)
+                    canvas.drawText(currentText, translateX * (screenSizeX / scaledWidth), translateY * (screenSizeY / scaledHeight), textPaint)
 
                     val file = File(externalCacheDir.absolutePath + "/image.jpg")
 
@@ -434,7 +482,7 @@ class EditActivity : AppCompatActivity() {
                         val intent = Intent()
                         intent.putExtra(SelectPackage.DATA, data)
                         intent.putExtra(Pkgs.TAG, pkg)
-                        setResult(SelectPackage.RES_EDITACTIVITY_OK,intent)
+                        setResult(SelectPackage.RES_EDITACTIVITY_OK, intent)
                         finish()
 
                     } catch (e: Exception) {
