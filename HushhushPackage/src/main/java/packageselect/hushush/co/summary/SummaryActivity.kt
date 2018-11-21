@@ -30,7 +30,6 @@ class SummaryActivity : AppCompatActivity() {
         setContentView(R.layout.summary_activity)
         setSupportActionBar(toolbar)
 
-
         setResult(SelectPackage.RES_SUMMARY_CANCEL)
 
         data = intent.getSerializableExtra(Pkgs.TAG) as Package

@@ -3,13 +3,14 @@ package packageselect.hushush.co
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.photoedit.EditActivity
 import packageselect.hushush.co.summary.SummaryActivity
 
-class SelectPackage : AppCompatActivity() {
+class  SelectPackage : AppCompatActivity() {
 
     companion object {
 
@@ -73,6 +74,7 @@ class SelectPackage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_package)
+
 
         val i = Intent(this, HushushPackages::class.java)
         i.putExtra(SelectPackage.DATA, data)
