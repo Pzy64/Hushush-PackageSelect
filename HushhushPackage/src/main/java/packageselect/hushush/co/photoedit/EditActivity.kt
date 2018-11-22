@@ -471,8 +471,18 @@ class EditActivity : AppCompatActivity() {
 
                     canvas.drawBitmap(bitmapL!!, 0f, 0f, null)
 
-                    textPaint.textSize = textPaint.textSize * (screenSizeX / scaledWidth)
-                    canvas.drawText(currentText, translateX * (screenSizeX / scaledWidth), translateY * (screenSizeY / scaledHeight), textPaint)
+                    val bp = Bitmap.createBitmap(screenSizeX, screenSizeY, Bitmap.Config.ARGB_8888)
+                    val textCV = Canvas(bp)
+                    textCV.save()
+                    textPaint.textSize = textPaint.textSize * scaleFactor
+                    textCV.drawText(currentText, translateX*(screenSizeX/scaledWidth.toFloat()), translateY*(screenSizeX/scaledWidth.toFloat()), textPaint)
+                    textCV.scale((screenSizeX/scaledWidth.toFloat()),(screenSizeY.toFloat()/scaledHeight))
+                    textCV.restore()
+
+
+                    Log.d("YYY", "${screenSizeX/scaledWidth.toFloat()}")
+
+                    canvas.drawBitmap(bp,0f,0f,null)
 
                     val file = File(externalCacheDir.absolutePath + "/image.jpg")
 
