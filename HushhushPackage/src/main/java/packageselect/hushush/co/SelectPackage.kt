@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import org.jetbrains.anko.toast
 import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Pkgs
@@ -133,5 +134,10 @@ class  SelectPackage : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+        toast("reentered")
     }
 }

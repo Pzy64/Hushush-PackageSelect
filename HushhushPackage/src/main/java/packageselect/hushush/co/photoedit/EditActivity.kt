@@ -10,7 +10,6 @@ import android.content.res.Configuration
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
-import android.os.health.PackageHealthStats
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -25,17 +24,14 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.edit_content.*
 import kotlinx.android.synthetic.main.editor_view.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
 import packageselect.hushush.co.SelectPackage
-import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
-import packageselect.hushush.co.summary.SummaryActivity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -391,9 +387,9 @@ class EditActivity : AppCompatActivity() {
                 canvas.translate(screenTranslateX, screenTranslateY)
                 canvas.scale(screenscaleFactor, screenscaleFactor)
 
-                if (bitmap != null)
+                if (bitmap != null ) {
                     canvas.drawBitmap(bitmap!!, 0f, 0f, null)
-
+                }
                 textPaint.apply {
                     color = currentColor
                     typeface = currentTypeface
@@ -434,7 +430,7 @@ class EditActivity : AppCompatActivity() {
                         val intent = Intent()
                         intent.putExtra(SelectPackage.DATA, data)
                         intent.putExtra(Pkgs.TAG, pkg)
-                        setResult(SelectPackage.RES_EDITACTIVITY_OK,intent)
+                        setResult(SelectPackage.RES_EDITACTIVITY_OK, intent)
                         finish()
 
                     } catch (e: Exception) {
