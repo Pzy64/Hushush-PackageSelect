@@ -42,12 +42,19 @@ class EditActivity : AppCompatActivity() {
 
     private var translateX = 0f
     private var translateY = 0f
+    private var translateXBg = 0f
+    private var translateYBg = 0f
+
     private var scaleFactor = 1f
+    private var scaleFactorBg = 1f
 
     private var screenTranslateX = 0f
     private var screenTranslateY = 0f
-    private var screenscaleFactor = 1f
+    private var screenTranslateXBg = 0f
+    private var screenTranslateYBg = 0f
 
+    private var screenscaleFactor = 1f
+    private var screenScaleFactorBg = 1f
 
     private var xCoord = 0f
     private var yCoord = 0f
@@ -278,32 +285,32 @@ class EditActivity : AppCompatActivity() {
                             }
 
 
-//                            if (screenSizeX / screenSizeY > width / height) {
-//                                /**  to fit width */
-//                                screenscaleFactor = width / screenSizeX.toFloat()
-//                                scaleFactor = screenscaleFactor
-//
-//                                screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
-//                                translateY = screenTranslateY
-//
-//                                scaledWidth = width
-//                                scaledHeight = (screenSizeY * screenscaleFactor).toInt()
-//
-//                                Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
-//
-//                            } else {
-//                                /**  to fit height */
-//                                screenscaleFactor = height / screenSizeY.toFloat()
-//                                scaleFactor = screenscaleFactor
-//
-//                                screenTranslateX = (width - (screenSizeX * screenscaleFactor)) / 2f
-//                                translateX = screenTranslateX
-//
-//                                scaledHeight = height
-//                                scaledWidth = (screenSizeX * screenscaleFactor).toInt()
-//
-//                                Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
-//                            }
+                            if (screenSizeX / screenSizeY > width / height) {
+                                /**  to fit width */
+                                screenscaleFactor = width / screenSizeX.toFloat()
+                                scaleFactor = screenscaleFactor
+
+                                screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
+                                translateY = screenTranslateY
+
+                                scaledWidth = width
+                                scaledHeight = (screenSizeY * screenscaleFactor).toInt()
+
+                                Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
+
+                            } else {
+                                /**  to fit height */
+                                screenscaleFactor = height / screenSizeY.toFloat()
+                                scaleFactor = screenscaleFactor
+
+                                screenTranslateX = (width - (screenSizeX * screenscaleFactor)) / 2f
+                                translateX = screenTranslateX
+
+                                scaledHeight = height
+                                scaledWidth = (screenSizeX * screenscaleFactor).toInt()
+
+                                Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
+                            }
 
 
                             if (screenSizeX / screenSizeY > width / height) {
@@ -312,11 +319,11 @@ class EditActivity : AppCompatActivity() {
                                 scaledWidth = width
                                 scaledHeight = (width * (screenSizeX / screenSizeY.toFloat())).toInt()
 
-                                screenscaleFactor = width / scaledWidth.toFloat()
-                                scaleFactor = screenscaleFactor
+                                screenScaleFactorBg = width / scaledWidth.toFloat()
+                                scaleFactorBg = screenScaleFactorBg
 
-                                screenTranslateY = (height - (scaledHeight * scaleFactor)) / 2
-                                translateY = screenTranslateY
+                                screenTranslateYBg = (height - (scaledHeight * screenScaleFactorBg)) / 2
+                                translateYBg = screenTranslateYBg
 
 
 
@@ -329,11 +336,11 @@ class EditActivity : AppCompatActivity() {
                                 scaledWidth = (height * (screenSizeX / screenSizeY.toFloat())).toInt()
 
 
-                                screenscaleFactor = height / scaledHeight.toFloat()
-                                scaleFactor = screenscaleFactor
+                                screenScaleFactorBg = height / scaledHeight.toFloat()
+                                scaleFactorBg = screenScaleFactorBg
 
-                                screenTranslateX = (width - (scaledWidth * screenscaleFactor)) / 2f
-                                translateX = screenTranslateX
+                                screenTranslateXBg = (width - (scaledWidth * screenScaleFactorBg)) / 2f
+                                translateXBg = screenTranslateXBg
 
 
 
@@ -342,6 +349,7 @@ class EditActivity : AppCompatActivity() {
 
                             val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false)
                             val scaledBitmapL = Bitmap.createScaledBitmap(bitmap, screenSizeX, screenSizeY, false)
+                            bitmap.recycle()
 
                             uiThread {
 
@@ -349,14 +357,16 @@ class EditActivity : AppCompatActivity() {
 
                                 selectImageLayout.visibility = View.GONE
 
-
-
                                 editor.setSrc(scaledBitmap, scaledBitmapL)
 
                                 editorView.visibility = View.VISIBLE
 
-                                translateX = scaledWidth / 2f
-                                translateY = scaledHeight / 2f
+                                translateXBg = scaledWidth / 2f
+                                translateYBg = scaledHeight / 2f
+
+                                translateX = screenSizeX / 2f
+                                translateY = screenSizeY / 2f
+
                             }
 
                         } else {
@@ -434,8 +444,8 @@ class EditActivity : AppCompatActivity() {
 
                 canvas.save()
 
-                canvas.translate(screenTranslateX, screenTranslateY)
-                canvas.scale(screenscaleFactor, screenscaleFactor)
+                canvas.translate(screenTranslateXBg, screenTranslateYBg)
+                canvas.scale(screenScaleFactorBg, screenScaleFactorBg)
 
                 if (bitmap != null)
                     canvas.drawBitmap(bitmap!!, 0f, 0f, null)
@@ -468,21 +478,19 @@ class EditActivity : AppCompatActivity() {
                     val image = Bitmap.createBitmap(screenSizeX, screenSizeY, Bitmap.Config.ARGB_8888)
                     val canvas = Canvas(image)
 
-
                     canvas.drawBitmap(bitmapL!!, 0f, 0f, null)
 
                     val bp = Bitmap.createBitmap(screenSizeX, screenSizeY, Bitmap.Config.ARGB_8888)
                     val textCV = Canvas(bp)
                     textCV.save()
-                    textPaint.textSize = textPaint.textSize * scaleFactor
-                    textCV.drawText(currentText, translateX*(screenSizeX/scaledWidth.toFloat()), translateY*(screenSizeX/scaledWidth.toFloat()), textPaint)
-                    textCV.scale((screenSizeX/scaledWidth.toFloat()),(screenSizeY.toFloat()/scaledHeight))
+                    textCV.drawText(currentText, translateX, translateY, textPaint)
+
                     textCV.restore()
 
 
-                    Log.d("YYY", "${screenSizeX/scaledWidth.toFloat()}")
+                    Log.d("YYY", "${screenSizeX / scaledWidth.toFloat()}")
 
-                    canvas.drawBitmap(bp,0f,0f,null)
+                    canvas.drawBitmap(bp, 0f, 0f, null)
 
                     val file = File(externalCacheDir.absolutePath + "/image.jpg")
 
