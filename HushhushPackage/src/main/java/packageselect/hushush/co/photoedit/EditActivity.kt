@@ -1,13 +1,13 @@
 package packageselect.hushush.co.photoedit
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.*
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
@@ -31,6 +31,7 @@ import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
+import packageselect.hushush.co.photoedit.cropper.Resizer
 import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
 import java.io.File
 import java.io.FileOutputStream
@@ -39,22 +40,18 @@ import java.io.FileOutputStream
 class EditActivity : AppCompatActivity() {
 
     private val STORAGE_REQ = 1001
+    private val REQ_LOADIMG = 1556
 
     private var translateX = 0f
     private var translateY = 0f
-    private var translateXBg = 0f
-    private var translateYBg = 0f
-
     private var scaleFactor = 1f
-    private var scaleFactorBg = 1f
+
+    private var scaledHeight = 0
+    private var scaledWidth = 0
 
     private var screenTranslateX = 0f
     private var screenTranslateY = 0f
-    private var screenTranslateXBg = 0f
-    private var screenTranslateYBg = 0f
-
-    private var screenscaleFactor = 1f
-    private var screenScaleFactorBg = 1f
+    private var screenScaleFactor = 1f
 
     private var xCoord = 0f
     private var yCoord = 0f
@@ -76,9 +73,6 @@ class EditActivity : AppCompatActivity() {
     private var screenSizeX = 0
     private var screenSizeY = 0
 
-    private var scaledHeight = 0
-    private var scaledWidth = 0
-
     private var currentText = ""
     private var currentColor = Color.WHITE
     private var currentTypeface: Typeface? = null
@@ -91,7 +85,12 @@ class EditActivity : AppCompatActivity() {
     private lateinit var data: HushushData
     private lateinit var pkg: Package
 
+    private var cropUri: Uri? = null
+    private var resultUri: Uri? = null
+    private var cropScaledUri: Uri? = null
+
     @SuppressLint("ClickableViewAccessibility")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -104,6 +103,11 @@ class EditActivity : AppCompatActivity() {
 
         setResult(SelectPackage.RES_EDITACTIVITY_CANCEL)
 
+        if (externalCacheDir != null) {
+            cropUri = Uri.fromFile(File(externalCacheDir.absolutePath + "/image.jpg"))
+            cropScaledUri = Uri.fromFile(File(externalCacheDir.absolutePath + "/scaled"))
+            resultUri = Uri.fromFile(File(externalCacheDir.absolutePath + "/result.jpg"))
+        }
 
         data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
         pkg = intent.getSerializableExtra(Pkgs.TAG) as Package
@@ -150,16 +154,13 @@ class EditActivity : AppCompatActivity() {
         resolution.text = "Image resolution must be \ngreater than or equal to ${data.screenSize}"
 
         selectImageLayout.setOnClickListener {
-            if (screenSizeX != 0 && screenSizeY != 0)
-                CropImage.activity()
-                        .setFixAspectRatio(true)
-                        .setAspectRatio(screenSizeX, screenSizeY)
-                        .setMinCropResultSize(screenSizeX, screenSizeY)
-                        .setActivityTitle("CROP IMAGE")
-                        .setAutoZoomEnabled(true)
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .start(this)
-            else
+            if (screenSizeX != 0 && screenSizeY != 0) {
+                val i = Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
+                startActivityForResult(i, REQ_LOADIMG)
+            } else
                 toast("Screen size format error")
         }
 
@@ -237,13 +238,13 @@ class EditActivity : AppCompatActivity() {
 
     private fun fixX(x: Float): Float {
         val xTranslationFix = x - screenTranslateX
-        val xScaleFix = xTranslationFix / screenscaleFactor
+        val xScaleFix = xTranslationFix / screenScaleFactor
         return xScaleFix
     }
 
     private fun fixY(y: Float): Float {
         val yTranslationFix = y - screenTranslateY
-        val yScaleFix = yTranslationFix / screenscaleFactor
+        val yScaleFix = yTranslationFix / screenScaleFactor
         return yScaleFix
     }
 
@@ -263,120 +264,103 @@ class EditActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             val result = CropImage.getActivityResult(data)
-            if (resultCode == Activity.RESULT_OK) {
-                val resultUri = result.uri
+            if (resultCode == AppCompatActivity.RESULT_OK) {
+                result.doAsync {
 
-                doAsync {
-                    val imageStream = contentResolver.openInputStream(resultUri)
-                    val bitmap = BitmapFactory.decodeStream(imageStream)
-                    if (bitmap != null) {
-                        if (bitmap.width >= screenSizeX && bitmap.height >= screenSizeY) {
-                            val displayMetrics = DisplayMetrics()
-                            windowManager.defaultDisplay.getMetrics(displayMetrics)
+                    val displayMetrics = DisplayMetrics()
+                    windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-                            val height: Int
-                            val width: Int
-                            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                                height = displayMetrics.widthPixels
-                                width = displayMetrics.heightPixels
-                            } else {
-                                height = displayMetrics.heightPixels
-                                width = displayMetrics.widthPixels
-                            }
-
-
-                            if (screenSizeX / screenSizeY > width / height) {
-                                /**  to fit width */
-                                screenscaleFactor = width / screenSizeX.toFloat()
-                                scaleFactor = screenscaleFactor
-
-                                screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
-                                translateY = screenTranslateY
-
-                                scaledWidth = width
-                                scaledHeight = (screenSizeY * screenscaleFactor).toInt()
-
-                                Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
-
-                            } else {
-                                /**  to fit height */
-                                screenscaleFactor = height / screenSizeY.toFloat()
-                                scaleFactor = screenscaleFactor
-
-                                screenTranslateX = (width - (screenSizeX * screenscaleFactor)) / 2f
-                                translateX = screenTranslateX
-
-                                scaledHeight = height
-                                scaledWidth = (screenSizeX * screenscaleFactor).toInt()
-
-                                Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
-                            }
-
-
-                            if (screenSizeX / screenSizeY > width / height) {
-                                /**  to fit width */
-
-                                scaledWidth = width
-                                scaledHeight = (width * (screenSizeX / screenSizeY.toFloat())).toInt()
-
-                                screenScaleFactorBg = width / scaledWidth.toFloat()
-                                scaleFactorBg = screenScaleFactorBg
-
-                                screenTranslateYBg = (height - (scaledHeight * screenScaleFactorBg)) / 2
-                                translateYBg = screenTranslateYBg
-
-
-
-                                Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
-
-                            } else {
-                                /**  to fit height */
-
-                                scaledHeight = height
-                                scaledWidth = (height * (screenSizeX / screenSizeY.toFloat())).toInt()
-
-
-                                screenScaleFactorBg = height / scaledHeight.toFloat()
-                                scaleFactorBg = screenScaleFactorBg
-
-                                screenTranslateXBg = (width - (scaledWidth * screenScaleFactorBg)) / 2f
-                                translateXBg = screenTranslateXBg
-
-
-
-                                Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
-                            }
-
-                            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, false)
-                            val scaledBitmapL = Bitmap.createScaledBitmap(bitmap, screenSizeX, screenSizeY, false)
-                            bitmap.recycle()
-
-                            uiThread {
-
-                                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
-                                selectImageLayout.visibility = View.GONE
-
-                                editor.setSrc(scaledBitmap, scaledBitmapL)
-
-                                editorView.visibility = View.VISIBLE
-
-                                translateXBg = scaledWidth / 2f
-                                translateYBg = scaledHeight / 2f
-
-                                translateX = screenSizeX / 2f
-                                translateY = screenSizeY / 2f
-
-                            }
-
-                        } else {
-                            uiThread {
-                                longToast("Cropped image must have minimum resolution of $screenSizeX X $screenSizeY")
-                            }
-                        }
+                    val height: Int
+                    val width: Int
+                    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        height = displayMetrics.widthPixels
+                        width = displayMetrics.heightPixels
+                    } else {
+                        height = displayMetrics.heightPixels
+                        width = displayMetrics.widthPixels
                     }
+
+                    uiThread {
+
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+                        selectImageLayout.visibility = View.GONE
+
+                        if (screenSizeX / screenSizeY > width / height) {
+                            /**  to fit width */
+                            screenScaleFactor = width / screenSizeX.toFloat()
+                            scaleFactor = screenScaleFactor
+
+                            screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
+                            translateY = screenTranslateY
+
+                            scaledWidth = width
+                            scaledHeight = (width / (screenSizeX / screenSizeY.toFloat())).toInt()
+
+                            Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
+                        } else {
+                            /**  to fit height */
+                            screenScaleFactor = height / screenSizeY.toFloat()
+                            scaleFactor = screenScaleFactor
+
+                            screenTranslateX = (width - (screenSizeX * screenScaleFactor)) / 2f
+                            translateX = screenTranslateX
+
+                            scaledHeight = height
+                            scaledWidth = (height * (screenSizeX / screenSizeY.toFloat())).toInt()
+
+                            Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
+                        }
+
+
+                        if (cropUri != null && cropScaledUri != null) {
+
+                            Resizer(this@EditActivity)
+                                    .setTargetLength(scaledWidth)
+                                    .setQuality(75)
+                                    .setOutputFilename("image")
+                                    .setOutputDirPath(cropScaledUri!!.path)
+                                    .setSourceImage(File(cropUri!!.path))
+                                    .setOutputFormat(Bitmap.CompressFormat.JPEG)
+                                    .resizedFile
+
+                        }
+
+
+                        editor.start()
+                        editorView.visibility = View.VISIBLE
+
+                        translateX = screenSizeX / 2f
+                        translateY = screenSizeY / 2f
+                    }
+
                 }
 
+            }
+        } else if (requestCode == REQ_LOADIMG && resultCode == AppCompatActivity.RESULT_OK && data != null) {
+
+            val selectedImage = data.data
+            if (selectedImage != null) {
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeStream(contentResolver.openInputStream(selectedImage), null, options)
+
+                if (options.outHeight >= screenSizeY || options.outWidth >= screenSizeX) {
+
+                    CropImage.activity(selectedImage)
+                            .setFixAspectRatio(true)
+                            .setAspectRatio(screenSizeX, screenSizeY)
+                            .setMinCropResultSize(screenSizeX, screenSizeY)
+                            .setActivityTitle("CROP IMAGE")
+                            .setAutoZoomEnabled(true)
+                            .setRequestedSize(screenSizeX, screenSizeY)
+                            .setGuidelines(CropImageView.Guidelines.ON)
+                            .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+                            .setOutputUri(cropUri)
+                            .start(this)
+                } else {
+                    longToast("Cropped image must have minimum resolution of $screenSizeX X $screenSizeY")
+                }
             }
         }
     }
@@ -435,8 +419,15 @@ class EditActivity : AppCompatActivity() {
                     textSize = currentTextSize.toFloat()
                 }
 
-        private var bitmap: Bitmap? = null
-        private var bitmapL: Bitmap? = null
+        private val mat: Matrix by lazy {
+            Matrix().apply { postScale(screenSizeX.toFloat() / scaledWidth, screenSizeX.toFloat() / scaledWidth) }
+        }
+
+        private var scaledBitmap: Bitmap? = null
+
+        fun start() {
+            scaledBitmap = BitmapFactory.decodeFile(cropScaledUri!!.path + "/image.jpg")
+        }
 
         override fun onDraw(nullableCanvas: Canvas?) {
             super.onDraw(nullableCanvas)
@@ -444,12 +435,12 @@ class EditActivity : AppCompatActivity() {
 
                 canvas.save()
 
-                canvas.translate(screenTranslateXBg, screenTranslateYBg)
-                canvas.scale(screenScaleFactorBg, screenScaleFactorBg)
+                canvas.translate(screenTranslateX, screenTranslateY)
+                canvas.scale(screenScaleFactor, screenScaleFactor)
 
-                if (bitmap != null)
-                    canvas.drawBitmap(bitmap!!, 0f, 0f, null)
-
+                if (scaledBitmap != null) {
+                    canvas.drawBitmap(scaledBitmap!!, mat, null)
+                }
                 textPaint.apply {
                     color = currentColor
                     typeface = currentTypeface
@@ -465,34 +456,21 @@ class EditActivity : AppCompatActivity() {
         }
 
 
-        fun setSrc(image: Bitmap, imageL: Bitmap) {
-            bitmap = image
-            bitmapL = imageL
-        }
-
         fun saveImage() {
 
             doAsync {
-                if (bitmap != null && bitmapL != null) {
+                if (cropUri != null && resultUri != null) {
+                    val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(cropUri!!))
 
                     val image = Bitmap.createBitmap(screenSizeX, screenSizeY, Bitmap.Config.ARGB_8888)
                     val canvas = Canvas(image)
 
-                    canvas.drawBitmap(bitmapL!!, 0f, 0f, null)
+                    canvas.drawBitmap(bitmap, 0f, 0f, null)
 
-                    val bp = Bitmap.createBitmap(screenSizeX, screenSizeY, Bitmap.Config.ARGB_8888)
-                    val textCV = Canvas(bp)
-                    textCV.save()
-                    textCV.drawText(currentText, translateX, translateY, textPaint)
-
-                    textCV.restore()
+                    canvas.drawText(currentText, translateX, translateY, textPaint)
 
 
-                    Log.d("YYY", "${screenSizeX / scaledWidth.toFloat()}")
-
-                    canvas.drawBitmap(bp, 0f, 0f, null)
-
-                    val file = File(externalCacheDir.absolutePath + "/image.jpg")
+                    val file = File(resultUri!!.path)
 
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))

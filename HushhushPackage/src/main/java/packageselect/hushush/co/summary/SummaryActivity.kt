@@ -67,7 +67,7 @@ class SummaryActivity : AppCompatActivity() {
 
     private fun populateView() {
         Glide.with(this)
-                .load(File(externalCacheDir.absolutePath + "/image.jpg"))
+                .load(File(externalCacheDir.absolutePath + "/result.jpg"))
                 .apply(RequestOptions()
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
