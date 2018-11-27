@@ -123,7 +123,7 @@
         android:layout_height="wrap_content"
         android:hint="screen_size"
         android:inputType="textShortMessage"
-        android:text="4000x1800" />
+        android:text="4000x4000" />
 
     <EditText
         android:id="@+id/callback_url"
