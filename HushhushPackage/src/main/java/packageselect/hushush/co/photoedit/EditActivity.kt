@@ -280,38 +280,39 @@ class EditActivity : AppCompatActivity() {
                         width = displayMetrics.widthPixels
                     }
 
+
+                    if (screenSizeX / screenSizeY > width / height) {
+                        /**  to fit width */
+                        screenScaleFactor = width / screenSizeX.toFloat()
+                        scaleFactor = screenScaleFactor
+
+                        screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
+                        translateY = screenTranslateY
+
+                        scaledWidth = width
+                        scaledHeight = (width / (screenSizeX / screenSizeY.toFloat())).toInt()
+
+                        Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
+                    } else {
+                        /**  to fit height */
+                        screenScaleFactor = height / screenSizeY.toFloat()
+                        scaleFactor = screenScaleFactor
+
+                        screenTranslateX = (width - (screenSizeX * screenScaleFactor)) / 2f
+                        translateX = screenTranslateX
+
+                        scaledHeight = height
+                        scaledWidth = (height * (screenSizeX / screenSizeY.toFloat())).toInt()
+
+                        Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
+                    }
+
+
                     uiThread {
 
                         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
                         selectImageLayout.visibility = View.GONE
-
-                        if (screenSizeX / screenSizeY > width / height) {
-                            /**  to fit width */
-                            screenScaleFactor = width / screenSizeX.toFloat()
-                            scaleFactor = screenScaleFactor
-
-                            screenTranslateY = (height - (screenSizeY * scaleFactor)) / 2
-                            translateY = screenTranslateY
-
-                            scaledWidth = width
-                            scaledHeight = (width / (screenSizeX / screenSizeY.toFloat())).toInt()
-
-                            Log.d("YYY", "FIT W $scaledWidth $scaledHeight")
-                        } else {
-                            /**  to fit height */
-                            screenScaleFactor = height / screenSizeY.toFloat()
-                            scaleFactor = screenScaleFactor
-
-                            screenTranslateX = (width - (screenSizeX * screenScaleFactor)) / 2f
-                            translateX = screenTranslateX
-
-                            scaledHeight = height
-                            scaledWidth = (height * (screenSizeX / screenSizeY.toFloat())).toInt()
-
-                            Log.d("YYY", "FIT H $scaledWidth $scaledHeight")
-                        }
-
 
                         if (cropUri != null && cropScaledUri != null) {
 
@@ -451,6 +452,7 @@ class EditActivity : AppCompatActivity() {
 
                 canvas.restore()
 
+
             }
             invalidate()
         }
@@ -471,9 +473,10 @@ class EditActivity : AppCompatActivity() {
 
 
                     val file = File(resultUri!!.path)
-
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
+
+                        image.recycle()
 
                         val intent = Intent()
                         intent.putExtra(SelectPackage.DATA, data)

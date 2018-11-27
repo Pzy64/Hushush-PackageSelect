@@ -75,6 +75,7 @@ class  SelectPackage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_package)
 
+        Log.d("YYY", "Activity started again")
 
         val i = Intent(this, HushushPackages::class.java)
         i.putExtra(SelectPackage.DATA, data)
