@@ -96,7 +96,6 @@ class EditActivity : AppCompatActivity() {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
 
         setContentView(R.layout.edit_activity)
@@ -394,17 +393,13 @@ class EditActivity : AppCompatActivity() {
         override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
 
             isScaling = true
-
             return super.onScaleBegin(detector)
-
-
         }
 
         override fun onScaleEnd(detector: ScaleGestureDetector?) {
             super.onScaleEnd(detector)
 
             isScaling = false
-
         }
     }
 
@@ -468,14 +463,11 @@ class EditActivity : AppCompatActivity() {
                     val canvas = Canvas(image)
 
                     canvas.drawBitmap(bitmap, 0f, 0f, null)
-
                     canvas.drawText(currentText, translateX, translateY, textPaint)
-
 
                     val file = File(resultUri!!.path)
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
-
                         image.recycle()
 
                         val intent = Intent()
