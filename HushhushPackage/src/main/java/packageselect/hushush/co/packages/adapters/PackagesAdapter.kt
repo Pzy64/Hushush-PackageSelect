@@ -58,6 +58,7 @@ class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerVie
                         val intent = Intent()
                         intent.putExtra(SelectPackage.DATA, hushushData)
                         intent.putExtra(Pkgs.TAG, data)
+                        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                         (context as AppCompatActivity).setResult(SelectPackage.RES_HUSHPACKAGE_OK,intent)
                         (context as AppCompatActivity).finish()
                     }

@@ -122,6 +122,7 @@ class  SelectPackage : AppCompatActivity() {
                 }
 
                 RES_SUMMARY_OK -> {
+
                     if (data != null) {
                         val intent = Intent()
                         intent.putExtra(SelectPackage.packageName, data.getStringExtra(SelectPackage.packageName))

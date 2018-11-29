@@ -157,7 +157,7 @@ class EditActivity : AppCompatActivity() {
                 val i = Intent(
                         Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-
+            i.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                 startActivityForResult(i, REQ_LOADIMG)
             } else
                 toast("Screen size format error")
