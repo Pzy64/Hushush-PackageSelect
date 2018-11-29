@@ -11,10 +11,10 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.summary_activity.*
 import kotlinx.android.synthetic.main.summary_content.*
 import packageselect.hushush.co.R
-import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
+import packageselect.hushush.co.photoedit.SelectHushushPackage
 import java.io.File
 
 class SummaryActivity : AppCompatActivity() {
@@ -30,10 +30,10 @@ class SummaryActivity : AppCompatActivity() {
         setContentView(R.layout.summary_activity)
         setSupportActionBar(toolbar)
 
-        setResult(SelectPackage.RES_SUMMARY_CANCEL)
+        setResult(SelectHushushPackage.RES_SUMMARY_CANCEL)
 
         data = intent.getSerializableExtra(Pkgs.TAG) as Package
-        hushushData = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
+        hushushData = intent.getSerializableExtra(SelectHushushPackage.DATA) as HushushData
 
         populateView()
 
@@ -42,10 +42,10 @@ class SummaryActivity : AppCompatActivity() {
         selectPackage.setOnClickListener {
 
             val intent = Intent()
-            intent.putExtra(SelectPackage.packageName, data.name)
-            intent.putExtra(SelectPackage.packageId, data.id)
-            intent.putExtra(SelectPackage.packagePrice, totalPrice)
-            setResult(SelectPackage.RES_SUMMARY_OK, intent)
+            intent.putExtra(SelectHushushPackage.packageName, data.name)
+            intent.putExtra(SelectHushushPackage.packageId, data.id)
+            intent.putExtra(SelectHushushPackage.packagePrice, totalPrice)
+            setResult(SelectHushushPackage.RES_SUMMARY_OK, intent)
             finish()
         }
 

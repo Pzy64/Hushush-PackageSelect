@@ -1,6 +1,7 @@
 package packageselect.hushush.co.photoedit
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -27,17 +28,78 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.uiThread
 import packageselect.hushush.co.R
-import packageselect.hushush.co.SelectPackage
+import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
 import packageselect.hushush.co.photoedit.cropper.Resizer
 import packageselect.hushush.co.photoedit.gesture.MoveGestureDetector
+import packageselect.hushush.co.summary.SummaryActivity
 import java.io.File
 import java.io.FileOutputStream
 
 
-class EditActivity : AppCompatActivity() {
+class SelectHushushPackage : AppCompatActivity() {
+
+
+    companion object {
+        internal const val DATA = "HUSHUSHDATA"
+
+        const val clientToken = "client_token"
+        const val screenSize = "screen_size"
+        const val seatCount = "seat_count"
+
+        const val bookingId = "booking_id"
+        const val selectedDate = "selected_date"
+        const val movieName = "movie_name"
+        const val mLocation = "location"
+        const val theatreName = "theatre_name"
+        const val showTime = "show_time"
+        const val screenNumber = "screen_number"
+        const val customerName = "customer_name"
+        const val mobileNumber = "mobile_number"
+        const val userEmail = "user_email"
+        const val seatId = "seat_id"
+        const val callbackUrl = "callback_url"
+        const val checksumHash = "checksumhash"
+
+        const val packagePrice = "packagePrice"
+        const val packageName = "packageName"
+        const val packageId = "packageId"
+
+        internal const val RES_HUSHPACKAGE_CANCEL = 100
+        internal const val RES_HUSHPACKAGE_OK = 104
+        internal const val RES_EDITACTIVITY_CANCEL = 101
+        internal const val RES_EDITACTIVITY_OK = 105
+        internal const val RES_SUMMARY_CANCEL = 102
+        internal const val RES_SUMMARY_OK = 103
+    }
+
+    private val REQ_CODE = 1023
+
+    private val hushData: HushushData by lazy { makeDataObject() }
+
+    private fun makeDataObject(): HushushData {
+        val data = HushushData()
+
+        data.clientToken = intent.getStringExtra(clientToken)
+        data.bookingId = intent.getStringExtra(bookingId)
+        data.selectedDate = intent.getStringExtra(selectedDate)
+        data.movieName = intent.getStringExtra(movieName)
+        data.mLocation = intent.getStringExtra(mLocation)
+        data.theatreName = intent.getStringExtra(theatreName)
+        data.showTime = intent.getStringExtra(showTime)
+        data.screenNumber = intent.getStringExtra(screenNumber)
+        data.seatCount = intent.getStringExtra(seatCount)
+        data.customerName = intent.getStringExtra(customerName)
+        data.mobileNumber = intent.getStringExtra(mobileNumber)
+        data.userEmail = intent.getStringExtra(userEmail)
+        data.seatId = intent.getStringExtra(seatId)
+        data.screenSize = intent.getStringExtra(screenSize)
+
+        return data
+    }
+
 
     private val STORAGE_REQ = 1001
     private val REQ_LOADIMG = 1556
@@ -82,34 +144,41 @@ class EditActivity : AppCompatActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
-    private lateinit var data: HushushData
     private lateinit var pkg: Package
+    private lateinit var data: HushushData
 
     private var cropUri: Uri? = null
     private var resultUri: Uri? = null
     private var cropScaledUri: Uri? = null
-
-    @SuppressLint("ClickableViewAccessibility")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
-
         setContentView(R.layout.edit_activity)
 
-        setResult(SelectPackage.RES_EDITACTIVITY_CANCEL)
+        val i = Intent(this, HushushPackages::class.java)
+        i.putExtra(DATA, hushData)
+
+        startActivityForResult(i, REQ_CODE)
+
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun editActivity(data: HushushData, pkgs: Package) {
+
+        this.data = data
+        this.pkg = pkgs
+
+
+        setResult(Activity.RESULT_CANCELED)
 
         if (externalCacheDir != null) {
             cropUri = Uri.fromFile(File(externalCacheDir.absolutePath + "/image.jpg"))
             cropScaledUri = Uri.fromFile(File(externalCacheDir.absolutePath + "/scaled"))
             resultUri = Uri.fromFile(File(externalCacheDir.absolutePath + "/result.jpg"))
         }
-
-        data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
-        pkg = intent.getSerializableExtra(Pkgs.TAG) as Package
 
         val screenSize = data.screenSize
 
@@ -157,7 +226,7 @@ class EditActivity : AppCompatActivity() {
                 val i = Intent(
                         Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            i.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                i.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                 startActivityForResult(i, REQ_LOADIMG)
             } else
                 toast("Screen size format error")
@@ -315,7 +384,7 @@ class EditActivity : AppCompatActivity() {
 
                         if (cropUri != null && cropScaledUri != null) {
 
-                            Resizer(this@EditActivity)
+                            Resizer(this@SelectHushushPackage)
                                     .setTargetLength(scaledWidth)
                                     .setQuality(75)
                                     .setOutputFilename("image")
@@ -360,6 +429,38 @@ class EditActivity : AppCompatActivity() {
                             .start(this)
                 } else {
                     longToast("Cropped image must have minimum resolution of $screenSizeX X $screenSizeY")
+                }
+            }
+        } else if (requestCode == REQ_CODE) {
+            when (resultCode) {
+
+                RES_HUSHPACKAGE_CANCEL -> {
+                    setResult(AppCompatActivity.RESULT_CANCELED)
+                    finish()
+                }
+
+                RES_HUSHPACKAGE_OK -> {
+                    if (data != null) {
+                        editActivity(data.getSerializableExtra(DATA) as HushushData, data.getSerializableExtra(Pkgs.TAG) as Package)
+                    }
+                }
+
+                RES_SUMMARY_CANCEL -> {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                    setResult(AppCompatActivity.RESULT_CANCELED)
+                    finish()
+                }
+
+                RES_SUMMARY_OK -> {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                    if (data != null) {
+                        val intent = Intent()
+                        intent.putExtra(packageName, data.getStringExtra(packageName))
+                        intent.putExtra(packageId, data.getStringExtra(packageId))
+                        intent.putExtra(packagePrice, data.getFloatExtra(packagePrice, 0f))
+                        setResult(AppCompatActivity.RESULT_OK)
+                        finish()
+                    }
                 }
             }
         }
@@ -470,11 +571,11 @@ class EditActivity : AppCompatActivity() {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
                         image.recycle()
 
-                        val intent = Intent()
-                        intent.putExtra(SelectPackage.DATA, data)
+                        val intent = Intent(this@SelectHushushPackage, SummaryActivity::class.java)
+                        intent.putExtra(DATA, data)
                         intent.putExtra(Pkgs.TAG, pkg)
-                        setResult(SelectPackage.RES_EDITACTIVITY_OK, intent)
-                        finish()
+                        setResult(RES_EDITACTIVITY_OK, intent)
+                        startActivityForResult(intent,REQ_CODE)
 
                     } catch (e: Exception) {
                         e.printStackTrace()

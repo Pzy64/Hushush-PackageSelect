@@ -3,9 +3,8 @@ package payment.hushush.co.hushushpayment
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fields.*
-import packageselect.hushush.co.SelectPackage
+import packageselect.hushush.co.photoedit.SelectHushushPackage
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,23 +16,23 @@ class MainActivity : AppCompatActivity() {
 
 
         submit.setOnClickListener {
-            val i = Intent(this, SelectPackage::class.java)
-            i.putExtra(SelectPackage.clientToken, client_token.text.toString())
-            i.putExtra(SelectPackage.bookingId, booking_id.text.toString())
-            i.putExtra(SelectPackage.selectedDate, selected_date.text.toString())
-            i.putExtra(SelectPackage.movieName, movie_name.text.toString())
-            i.putExtra(SelectPackage.mLocation, location.text.toString())
-            i.putExtra(SelectPackage.theatreName, theatre_name.text.toString())
-            i.putExtra(SelectPackage.showTime, show_time.text.toString())
-            i.putExtra(SelectPackage.screenNumber, screen_number.text.toString())
-            i.putExtra(SelectPackage.seatCount, seat_count.text.toString())
-            i.putExtra(SelectPackage.customerName, customer_name.text.toString())
-            i.putExtra(SelectPackage.mobileNumber, mobile_number.text.toString())
-            i.putExtra(SelectPackage.userEmail, user_email.text.toString())
-            i.putExtra(SelectPackage.seatId, seat_id.text.toString())
-            i.putExtra(SelectPackage.screenSize, screen_size.text.toString())
-            i.putExtra(SelectPackage.callbackUrl, callback_url.text.toString())
-            i.putExtra(SelectPackage.checksumHash, "hash")
+            val i = Intent(this, SelectHushushPackage::class.java)
+            i.putExtra(SelectHushushPackage.clientToken, client_token.text.toString())
+            i.putExtra(SelectHushushPackage.bookingId, booking_id.text.toString())
+            i.putExtra(SelectHushushPackage.selectedDate, selected_date.text.toString())
+            i.putExtra(SelectHushushPackage.movieName, movie_name.text.toString())
+            i.putExtra(SelectHushushPackage.mLocation, location.text.toString())
+            i.putExtra(SelectHushushPackage.theatreName, theatre_name.text.toString())
+            i.putExtra(SelectHushushPackage.showTime, show_time.text.toString())
+            i.putExtra(SelectHushushPackage.screenNumber, screen_number.text.toString())
+            i.putExtra(SelectHushushPackage.seatCount, seat_count.text.toString())
+            i.putExtra(SelectHushushPackage.customerName, customer_name.text.toString())
+            i.putExtra(SelectHushushPackage.mobileNumber, mobile_number.text.toString())
+            i.putExtra(SelectHushushPackage.userEmail, user_email.text.toString())
+            i.putExtra(SelectHushushPackage.seatId, seat_id.text.toString())
+            i.putExtra(SelectHushushPackage.screenSize, screen_size.text.toString())
+            i.putExtra(SelectHushushPackage.callbackUrl, callback_url.text.toString())
+            i.putExtra(SelectHushushPackage.checksumHash, "hash")
             i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivityForResult(i, REQ)
 

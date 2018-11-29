@@ -8,16 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.package_card.view.*
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 import packageselect.hushush.co.R
-import packageselect.hushush.co.SelectPackage
-import packageselect.hushush.co.packages.HushushPackages
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.dao.Package
 import packageselect.hushush.co.packages.dao.Pkgs
-import packageselect.hushush.co.photoedit.EditActivity
-import java.util.logging.Handler
+import packageselect.hushush.co.photoedit.SelectHushushPackage
 
 
 class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerView.Adapter<PackagesAdapter.ViewHolder>() {
@@ -56,10 +52,10 @@ class PackagesAdapter(val pkg: Pkgs, val hushushData: HushushData) : RecyclerVie
 
                     card.setOnClickListener {
                         val intent = Intent()
-                        intent.putExtra(SelectPackage.DATA, hushushData)
+                        intent.putExtra(SelectHushushPackage.DATA, hushushData)
                         intent.putExtra(Pkgs.TAG, data)
                         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                        (context as AppCompatActivity).setResult(SelectPackage.RES_HUSHPACKAGE_OK,intent)
+                        (context as AppCompatActivity).setResult(SelectHushushPackage.RES_HUSHPACKAGE_OK,intent)
                         (context as AppCompatActivity).finish()
                     }
                 }

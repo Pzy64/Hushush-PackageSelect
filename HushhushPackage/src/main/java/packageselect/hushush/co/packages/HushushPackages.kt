@@ -1,6 +1,5 @@
 package packageselect.hushush.co.packages
 
-import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
@@ -8,10 +7,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.content_package_select.*
 import packageselect.hushush.co.R
-import packageselect.hushush.co.SelectPackage
 import packageselect.hushush.co.packages.adapters.PackagesAdapter
 import packageselect.hushush.co.packages.dao.HushushData
 import packageselect.hushush.co.packages.network.PackagesAPI
+import packageselect.hushush.co.photoedit.SelectHushushPackage
 
 
 class HushushPackages : AppCompatActivity() {
@@ -23,9 +22,9 @@ class HushushPackages : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_package_select)
 
-        setResult(SelectPackage.RES_HUSHPACKAGE_CANCEL)
+        setResult(SelectHushushPackage.RES_HUSHPACKAGE_CANCEL)
 
-        data = intent.getSerializableExtra(SelectPackage.DATA) as HushushData
+        data = intent.getSerializableExtra(SelectHushushPackage.DATA) as HushushData
 
         callGetPackagesAPI()
 

@@ -14,7 +14,7 @@
             android:label="@string/title_activity_package_select"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".photoedit.EditActivity"
+            android:name=".photoedit.SelectHushushPackage"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_edit"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -25,7 +25,6 @@
             android:name=".summary.SummaryActivity"
             android:label="@string/title_activity_summary"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SelectPackage"></activity>
     </application>
 
 </manifest>
