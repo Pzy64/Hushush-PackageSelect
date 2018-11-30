@@ -570,6 +570,13 @@ class SelectHushushPackage : AppCompatActivity() {
                     try {
                         image.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(file))
                         image.recycle()
+                        bitmap.recycle()
+
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                        if(scaledBitmap != null && scaledBitmap!!.isRecycled) {
+                            scaledBitmap!!.recycle()
+                            scaledBitmap = null
+                        }
 
                         val intent = Intent(this@SelectHushushPackage, SummaryActivity::class.java)
                         intent.putExtra(DATA, data)
