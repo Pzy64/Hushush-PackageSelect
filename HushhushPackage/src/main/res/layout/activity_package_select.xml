@@ -22,7 +22,7 @@
             android:animateLayoutChanges="true"
             android:fitsSystemWindows="true"
             custom:contentScrim="#44003f"
-            custom:layout_scrollFlags="scroll|exitUntilCollapsed"
+            custom:layout_scrollFlags="scroll|enterAlways"
             custom:titleEnabled="false">
 
 
