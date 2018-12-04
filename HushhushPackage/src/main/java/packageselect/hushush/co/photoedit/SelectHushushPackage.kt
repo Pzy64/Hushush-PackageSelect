@@ -414,7 +414,9 @@ class SelectHushushPackage : AppCompatActivity() {
                 options.inJustDecodeBounds = true
                 BitmapFactory.decodeStream(contentResolver.openInputStream(selectedImage), null, options)
 
-                if (options.outHeight >= screenSizeY || options.outWidth >= screenSizeX) {
+                Log.d("YYY", "${options.outWidth}, ${options.outHeight}")
+
+                if (options.outHeight >= screenSizeY && options.outWidth >= screenSizeX) {
 
                     CropImage.activity(selectedImage)
                             .setFixAspectRatio(true)
