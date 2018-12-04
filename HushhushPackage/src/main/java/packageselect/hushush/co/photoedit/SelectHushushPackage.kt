@@ -550,7 +550,6 @@ class SelectHushushPackage : AppCompatActivity() {
 
                 canvas.restore()
 
-
             }
             invalidate()
         }
