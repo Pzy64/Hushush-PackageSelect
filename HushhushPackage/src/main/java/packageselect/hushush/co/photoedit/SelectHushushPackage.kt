@@ -14,6 +14,7 @@ import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.graphics.Palette
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
@@ -151,6 +152,8 @@ class SelectHushushPackage : AppCompatActivity() {
     private var resultUri: Uri? = null
     private var cropScaledUri: Uri? = null
 
+    public var palette: Palette? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -231,7 +234,6 @@ class SelectHushushPackage : AppCompatActivity() {
             } else
                 toast("Screen size format error")
         }
-
         changeText.setOnClickListener {
             val addTextDialog = AddTextDialog()
 
@@ -526,6 +528,11 @@ class SelectHushushPackage : AppCompatActivity() {
 
         fun start() {
             scaledBitmap = BitmapFactory.decodeFile(cropScaledUri!!.path + "/image.jpg")
+
+            doAsync {
+                palette = Palette.from(scaledBitmap!!).generate()
+            }
+
         }
 
         override fun onDraw(nullableCanvas: Canvas?) {
@@ -574,7 +581,7 @@ class SelectHushushPackage : AppCompatActivity() {
                         bitmap.recycle()
 
                         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-                        if(scaledBitmap != null && scaledBitmap!!.isRecycled) {
+                        if (scaledBitmap != null && scaledBitmap!!.isRecycled) {
                             scaledBitmap!!.recycle()
                             scaledBitmap = null
                         }
@@ -583,7 +590,7 @@ class SelectHushushPackage : AppCompatActivity() {
                         intent.putExtra(DATA, data)
                         intent.putExtra(Pkgs.TAG, pkg)
                         setResult(RES_EDITACTIVITY_OK, intent)
-                        startActivityForResult(intent,REQ_CODE)
+                        startActivityForResult(intent, REQ_CODE)
 
                     } catch (e: Exception) {
                         e.printStackTrace()
